@@ -221,14 +221,20 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
 
     <!-- Submit and Cancel Buttons -->
-    <button type="submit" class="btn btn-primary" onclick="send()">{% if form.instance.pk %}تحديث{% else %}حفظ{% endif %}</button>
+     {% if form.instance.pk %}
+    <button type="submit" hx-get="{% url 'purchase_update' form.instance.pk %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-primary" onclick="send()">تحديث</button>
+    {% else %}
+    <button type="submit" hx-post="{% url 'purchase_create'%}" hx-target="#content" hx-swap="innerHTML" class="btn btn-info" onclick="send()">انشاء</button>
+
+    {% endif %}
+    
     <script>
         function send()
         {
             document.getElementById("go_hell").innerHTML=""
         }
     </script>
-    <a href="{% url 'purchase_list' %}" class="btn btn-secondary">إلغاء</a>
+    <a hx-get="{% url 'purchase_list' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-secondary">إلغاء</a>
   </form>
 </div>
 <h1>ddd</h1>

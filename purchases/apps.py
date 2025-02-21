@@ -6,3 +6,4 @@ class PurchasesConfig(AppConfig):
 
     def ready(self):
         import purchases.signals
+        pass

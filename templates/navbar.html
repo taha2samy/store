@@ -24,13 +24,13 @@
                         <i class="fas fa-tags me-1"></i> الأصناف
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
-                        <li><a class="dropdown-item" hx-get="{% url 'category_list' %}"  hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
+                        <li><a class="dropdown-item" hx-get="{% url 'category_list' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
                             <i class="fas fa-list me-1"></i> الأصناف الرئيسية
                         </a></li>
                         <li><a class="dropdown-item" hx-get="{% url 'main_element_list' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
                             <i class="fas fa-boxes me-1"></i> الوحدات الرئيسية
                         </a></li>
-                        <li><a class="dropdown-item" hx-get="{% url 'sub_element_list' %}"  hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
+                        <li><a class="dropdown-item" hx-get="{% url 'sub_element_list' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
                             <i class="fas fa-box me-1"></i> الوحدات الفرعية
                         </a></li>
                     </ul>
@@ -43,18 +43,33 @@
                         <i class="fas fa-warehouse me-1"></i> المخزن
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="storeDropdown">
-                        <li><a class="dropdown-item" 
-                            hx-get="{% url 'supplier_list' %}" 
-                            hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
+                        <li><a class="dropdown-item" hx-get="{% url 'supplier_list' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
                              <i class="fas fa-truck me-1"></i> الموردون
-                         </a>
-                        </a></li>
-                        <li>
-                            <a class="dropdown-item" hx-get="{% url 'purchase_list' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
+                         </a></li>
+                        <li><a class="dropdown-item" hx-get="{% url 'purchase_list' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
                             <i class="fas fa-file-invoice me-1"></i> فواتير الشراء
                         </a></li>
                         <li><a class="dropdown-item" href="% url 'store_list' %">
                             <i class="fas fa-boxes me-1"></i> إدارة المخزن
+                        </a></li>
+                    </ul>
+                </li>
+
+                <!-- قائمة منسدلة للمبيعات -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="salesDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-shopping-cart me-1"></i> المبيعات
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="salesDropdown">
+                        <li><a class="dropdown-item" hx-get="% url 'sales_invoice_list' %" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
+                            <i class="fas fa-file-invoice-dollar me-1"></i> فواتير المبيعات
+                        </a></li>
+                        <li><a class="dropdown-item" hx-get="{% url 'customer_list' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
+                            <i class="fas fa-users me-1"></i> العملاء
+                        </a></li>
+                        <li><a class="dropdown-item" hx-get="% url 'sales_list' %" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
+                            <i class="fas fa-chart-line me-1"></i> المبيعات
                         </a></li>
                     </ul>
                 </li>
@@ -65,40 +80,33 @@
                 {% if user.is_authenticated %}
                 <!-- قائمة منسدلة للمستخدم -->
                 <div class="dropdown">
-                    <a  id ="navebarprofile"class="nav-link dropdown-toggle d-flex align-items-center text-decoration-none justify-content-between" 
-                    href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <div class="d-flex flex-column text-start" style="padding-left: 2rem;">
-                        <span class="fw-bold" style="font-size: 1rem;">{{ user|get_profile|get_field:'name_in_arabic' }}</span>
-                    </div>
-                    {% if user|get_profile %}
-                        <img src="{{ user|get_profile|get_field:'image.url' }}" alt="User Image" 
-                            class="rounded-circle shadow ms-2" width="50" height="50" 
-                            style="object-fit: cover; border: 2px solid #ccc;">
-                    {% else %}
-                        <i class="fas fa-user-circle text-secondary ms-2" style="font-size: 50px;"></i>
-                    {% endif %}
-                </a>
-                
-                          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li>
-                            <a class="dropdown-item" hx-get="{% url 'profile_detail' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
-                                <i class="fas fa-user-circle me-1"></i> الملف الشخصي
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" hx-get="{% url 'logout_reset' %}" hx-push-url="true"  hx-target="#content" hx-swap="innerHTML">
-                                <i class="fas fa-sign-out-alt me-1"></i> تسجيل الخروج
-                            </a>
-                        </li>
+                    <a id="navebarprofile" class="nav-link dropdown-toggle d-flex align-items-center text-decoration-none justify-content-between" 
+                        href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="d-flex flex-column text-start" style="padding-left: 2rem;">
+                            <span class="fw-bold" style="font-size: 1rem;">{{ user|get_profile|get_field:'name_in_arabic' }}</span>
+                        </div>
+                        {% if user|get_profile %}
+                            <img src="{{ user|get_profile|get_field:'image.url' }}" alt="User Image" 
+                                class="rounded-circle shadow ms-2" width="50" height="50" 
+                                style="object-fit: cover; border: 2px solid #ccc;">
+                        {% else %}
+                            <i class="fas fa-user-circle text-secondary ms-2" style="font-size: 50px;"></i>
+                        {% endif %}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" hx-get="{% url 'profile_detail' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
+                            <i class="fas fa-user-circle me-1"></i> الملف الشخصي
+                        </a></li>
+                        <li><a class="dropdown-item" hx-get="{% url 'logout_reset' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
+                            <i class="fas fa-sign-out-alt me-1"></i> تسجيل الخروج
+                        </a></li>
                     </ul>
-                    
                 </div>
                 {% else %}
                 <!-- أزرار تسجيل الدخول والتسجيل -->
                 <a class="btn btn-outline-light me-2" hx-get="{% url 'login' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
                     <i class="fas fa-sign-in-alt me-1"></i> تسجيل الدخول
                 </a>
-      
                 {% endif %}
             </div>
         </div>

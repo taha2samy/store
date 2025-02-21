@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'category',
     'purchases',
     'sales',
-    'profiles'
+    'profiles',
+    
 ]
 
 

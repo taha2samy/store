@@ -19,7 +19,7 @@
     <h1 class="my-4">قائمة فواتير الشراء</h1>
 
     <!-- زر إضافة فاتورة شراء جديدة -->
-    <a href="{% url 'purchase_create' %}" class="btn btn-primary mb-3">
+    <a hx-get="{% url 'purchase_create' %}"  hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-primary mb-3">
         <i class="fas fa-plus me-1"></i>
         إضافة فاتورة شراء جديدة
     </a>
@@ -80,7 +80,7 @@
                     <!-- أزرار التطبيق وإعادة التعيين -->
                     <div class="d-flex justify-content-between mt-4">
                         <button type="submit" class="btn btn-primary">تطبيق الفلاتر</button>
-                        <a href="{% url 'purchase_list' %}" class="btn btn-secondary">إعادة تعيين</a>
+                        <a hx-get="{% url 'purchase_list' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-secondary">إعادة تعيين</a>
                     </div>
                 </div>
             </form>
@@ -122,21 +122,35 @@
                 <td>{{ invoice.purchase_date|date:"Y-m-d" }}</td>
                 <td>{{ invoice.total_amount|floatformat:2 }}</td>
                 <td>
-                    <a href="{% url 'purchase_detail' invoice.id %}" class="btn btn-sm btn-info">
+                    <a hx-get="{% url 'purchase_detail' invoice.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-info">
                         <i class="fas fa-eye me-1"></i>
                         التفصيل
                     </a>
-                    <a href="{% url 'purchase_update' invoice.id %}" class="btn btn-sm btn-warning">
+                    <a hx-get="{% url 'purchase_update' invoice.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-warning">
                         <i class="fas fa-edit me-1"></i>
                         تعديل
                     </a>
-    
-
-                    <a href="{% url 'purchase_delete' invoice.id %}" class="btn btn-sm btn-danger">
+                
+                    <a hx-get="{% url 'purchase_delete' invoice.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-danger">
                         <i class="fas fa-trash me-1"></i>
                         حذف
                     </a>
+                
+                    <!-- زر الطباعة -->
+                    <a href="javascript:void(0);" onclick="printInvoice({{ invoice.id }})" class="btn btn-sm btn-primary">
+                        <i class="fas fa-print me-1"></i>
+                        طباعة
+                    </a>
                 </td>
+                
+                <script>
+                    function printInvoice(invoiceId) {
+                        // فتح نافذة جديدة
+                        const printWindow = window.open("{% url 'purchase_print' 0 %}".replace('0', invoiceId), '_blank', 'width=800,height=600');
+                        printWindow.print(); // قم بإطلاق نافذة الطباعة
+                    }
+                </script>
+                
             </tr>
             {% empty %}
             <tr>

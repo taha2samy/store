@@ -97,6 +97,8 @@ def uuid_item():
 
 class Store(models.Model):
     invoice_item = models.ForeignKey(PurchaseInvoiceItem,on_delete=models.CASCADE)
-    sub_element_quantity = models.PositiveBigIntegerField()
+    sub_element_quantity = models.PositiveSmallIntegerField()
     uuid_item=models.UUIDField(default=uuid_item)
+
+
     

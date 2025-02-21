@@ -8,7 +8,7 @@
     <p>هل أنت متأكد من حذف الفئة "{{ object.name }}"؟</p>
     <form method="post">
         {% csrf_token %}
-        <button type="submit" class="btn btn-danger">
+        <button type="submit" hx-post="{% url 'category_delete' object.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-danger">
             <i class="fas fa-trash me-1"></i>
             تأكيد الحذف
         </button>

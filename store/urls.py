@@ -26,7 +26,10 @@ urlpatterns = [
     path('purchaseswe/',include("purchases.urls")),
     path("category/",include("category.urls")),
     path('accounts/', include('django.contrib.auth.urls')),
-    path("accounts/",include("profiles.urls"))
+    path("accounts/",include("profiles.urls")),
+    path("sales/",include("sales.urls")),
+
+
     
 ]
 if settings.DEBUG:

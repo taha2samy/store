@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}تفاصيل العميل - {{ customer.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg border-0">
+                <!-- رأس البطاقة -->
+                <div class="card-header bg-info text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-user me-2"></i>
+                        تفاصيل العميل: {{ customer.name }}
+                    </h3>
+                </div>
+
+                <!-- جسم البطاقة -->
+                <div class="card-body">
+                    <!-- معلومات العميل -->
+                    <div class="mb-4">
+                        <h5 class="text-secondary">
+                            <i class="fas fa-id-card me-2"></i>
+                            المعلومات الأساسية
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>الاسم الكامل:</strong> {{ customer.name }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>ملعومات الاتصال:</strong> {{ customer.contact_info }}</p>
+                               
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- قائمة أرقام الهواتف -->
+                    <div class="mb-4">
+                        <h5 class="text-secondary">
+                            <i class="fas fa-phone-alt me-2"></i>
+                            أرقام الهواتف
+                        </h5>
+                        {% if phone_numbers %}
+                            <ul class="list-group">
+                                {% for phone in phone_numbers %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span><i class="fas fa-phone text-info me-2 ps-4"></i>{{ phone.number }}</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-muted">لا يوجد أرقام هاتف مسجلة لهذا العميل.</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- أزرار الإجراءات -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'customer_update' customer.id %}" class="btn btn-outline-info">
+                            <i class="fas fa-edit me-1"></i> تعديل
+                        </a>
+                        <a href="{% url 'customer_delete' customer.id %}" class="btn btn-outline-danger">
+                            <i class="fas fa-trash-alt me-1"></i> حذف
+                        </a>
+                        <a href="{% url 'customer_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> العودة إلى القائمة
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}قائمة الموردين{% endblock %}
+{% block title %}قائمة العملاء{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -15,10 +15,10 @@
     </div>
     {% endif %}
 
-    <h1 class="my-4">قائمة الموردين</h1>
+    <h1 class="my-4">قائمة العملاء</h1>
     
     <!-- زر إضافة مورد جديد -->
-    <a hx-get="{% url 'supplier_create' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-primary mb-3">
+    <a hx-get="{% url 'customer_create' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-primary mb-3">
         <i class="fas fa-plus me-1"></i>
         إضافة مورد جديد
     </a>
@@ -29,12 +29,12 @@
 <div class="card mb-4">
     <div class="card-header">
         <i class="fas fa-filter me-1"></i>
-        تصفية الموردين
+        تصفية العملاء
     </div>
     <div class="card-body">
         <form method="get" class="filter-form">
             <div class="card p-4 shadow-sm">
-                <h5 class="card-title">فلترة الموردين</h5>
+                <h5 class="card-title">فلترة العملاء</h5>
                 <div class="row g-3">
                     <!-- حقل البحث عن الاسم -->
                     <div class="col-md-6">
@@ -52,14 +52,14 @@
                 <!-- أزرار التطبيق وإعادة التعيين -->
                 <div class="d-flex justify-content-between mt-4">
                     <button type="submit" class="btn btn-primary">تطبيق الفلاتر</button>
-                    <a hx-get="{% url 'supplier_list' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-secondary">إعادة تعيين</a>
+                    <a hx-get="{% url 'customer_list' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-secondary">إعادة تعيين</a>
                 </div>
             </div>
         </form>
     </div>
 </div>
 
-    <!-- جدول الموردين -->
+    <!-- جدول العملاء -->
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
@@ -71,20 +71,20 @@
             </tr>
         </thead>
         <tbody>
-            {% for supplier in suppliers %}
+            {% for customer in customers %}
             <tr>
-                <td>{{ supplier.name }}</td>
-                <td>{{ supplier.contact_info }}</td>
+                <td>{{ customer.name }}</td>
+                <td>{{ customer.contact_info }}</td>
                 <td>
-                    <a hx-get="{% url 'supplier_update' supplier.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-warning">
+                    <a hx-get="{% url 'customer_update' customer.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-warning">
                         <i class="fas fa-edit me-1"></i>
                         تعديل
                     </a>
-                    <a hx-get="{% url 'supplier_delete' supplier.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-danger">
+                    <a hx-get="{% url 'customer_delete' customer.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-danger">
                         <i class="fas fa-trash me-1"></i>
                         حذف
                     </a>
-                    <a hx-get="{% url 'supplier_detail' supplier.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-info">
+                    <a hx-get="{% url 'customer_detail' customer.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-info">
                         <i class="fas fa-eye me-1"></i>
                         رؤية التفصيل
                     </a>

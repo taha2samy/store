@@ -2,7 +2,7 @@ from django_filters.views import FilterView
 from purchases.models import PurchaseInvoice,PurchaseInvoiceItem
 from purchases.filters.pruchases import PurchaseInvoiceFilter
 from django.db.models import Sum, F, FloatField, ExpressionWrapper
-from purchases.models import Supplier
+from purchases.models import Supplier,Store
 from extra_views import InlineFormSetFactory
 from extra_views import CreateWithInlinesView,UpdateWithInlinesView
 from django.urls import reverse_lazy
@@ -14,6 +14,21 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 
 
+
+class PurchaseInvoicePrintingView(DetailView):
+    model = PurchaseInvoice
+    template_name = 'html/purchases/printing.html'  
+    context_object_name = 'invoice'  
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        
+        items= PurchaseInvoiceItem.objects.filter(invoice=self.object)
+        context['items'] = Store.objects.filter(invoice_item__in=items).prefetch_related('invoice_item')
+
+        return context
+    
 class PurchaseInvoiceDetailView(DetailView):
     model = PurchaseInvoice
     template_name = 'html/purchases/detail.html'  

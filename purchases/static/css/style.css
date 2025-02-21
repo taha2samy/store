@@ -4,6 +4,7 @@
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
     padding-left: 8rem;
+    z-index: 10050;
 }
 
 .navbar:hover {

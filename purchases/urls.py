@@ -2,6 +2,7 @@ from django.urls import path
 from .views.category import CategoryCreateView,CategoryListView,CategoryDeleteView,CategoryUpdateView
 from .views.supplier import SupplierListView,SupplierCreateView,SupplierUpdateView,SupplierDeleteView,SupplierDetailView
 from .views.pruchases import PurchaseInvoiceListView,PurchaseInvoiceCreateView,PurchaseInvoiceUpdateView,PurchaseInvoiceDetailView,PurchaseInvoiceDeleteView
+from .views.pruchases import PurchaseInvoicePrintingView
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -43,6 +44,7 @@ urlpatterns = [
     path('purchases/update/<int:pk>/', PurchaseInvoiceUpdateView.as_view(), name='purchase_update'),
     path('purchases/detail/<int:pk>/', PurchaseInvoiceDetailView.as_view(), name='purchase_detail'),
     path('purchases/delete/<int:pk>/', PurchaseInvoiceDeleteView.as_view(), name='purchase_delete'),
+    path('purchases/printing/<int:pk>/', PurchaseInvoicePrintingView.as_view(), name='purchase_print'),
 
     path('update_button/', search_results, name='search_results'),
     path("sssss/",additional_action,name="additional_action")

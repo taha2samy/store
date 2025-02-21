@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طباعة باركودات العناصر</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* حجم مناسب لملصقات الباركود */
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .item {
+            border: 1px solid #ddd;
+            padding: 5px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .item h3 {
+            font-size: 12px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            overflow: hidden;        /* منع النص من تجاوز الحاوية */
+            text-overflow: ellipsis;  /* إضافة علامة الحذف إذا تجاوز النص */
+            white-space: nowrap;       /* منع التفاف النص */
+        }
+
+        .barcode-container {
+            width: 100%;
+            margin: 5px auto;
+            display: flex;
+            justify-content: center; /* توسيط الباركود */
+        }
+
+        .barcode {
+            width: 100%; /* اجعل عرض الباركود 100% من الحاوية */
+            max-width: 140px; /* حد أقصى لعرض الباركود */
+            margin: 0 auto;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+
+            .container {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* نفس حجم العرض */
+                gap: 5px; /* تقليل المسافة بين العناصر */
+            }
+
+            .item {
+                border: 1px solid #ddd;
+                padding: 5px;
+                margin-bottom: 10px;
+                page-break-inside: avoid;  /* تجنب تقسيم العنصر الواحد على صفحتين */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        {% for item in items %}
+            <div class="item">
+                <h3>{{ item.invoice_item.name }}</h3>
+                <div class="barcode-container">
+                    <svg class="barcode" id="barcode{{ item.id }}"></svg>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            {% for item in items %}
+                JsBarcode("#barcode{{ item.id }}","#barcode{{ item.uuid_item }}",{
+                    format: "CODE128",
+                    lineColor: "#000",
+                    width: 1.5, /* تقليل عرض الخط */
+                    height: 40, /* تقليل الارتفاع */ 
+                    displayValue: true, // عرض قيمة الباركود أسفل الباركود
+                    fontSize: 10 /* تقليل حجم الخط */
+                });
+            {% endfor %}
+
+            window.print(); // إطلاق نافذة الطباعة تلقائيًا
+        });
+    </script>
+
+</body>
+</html>
