@@ -1,9 +1,15 @@
 from django.db.models.signals import pre_save,pre_delete
 from django.dispatch import receiver
-from .models import SellsItems
+from .models import SellsItems,Customer,
 from django.core.exceptions import ObjectDoesNotExist
-from purchases.models import Store
+from purchases.models import Store,PhoneNumber
+from django.contrib.contenttypes.models import ContentType
 
+
+@receiver(pre_delete, sender=Customer)
+def delete_phone_numbers(sender, instance, **kwargs):
+    content_type = ContentType.objects.get_for_model(Customer)
+    PhoneNumber.objects.filter(content_type=content_type, object_id=instance.id).delete()
 
 @receiver(pre_save, sender=SellsItems)
 def update_store_item(sender, instance, **kwargs):
