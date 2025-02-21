@@ -13,6 +13,10 @@ from purchases.models import PhoneNumber
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse_lazy
 
+class HomeView(TemplateView):
+    template_name="home.html"
+
+
 class logut_reset(LoginRequiredMixin,TemplateView):
     template_name="registration/logout_reset.html"
 

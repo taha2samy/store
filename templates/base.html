@@ -1,6 +1,7 @@
 {% load static %}
 {% load profile_tags %}
 
+{% if not request.META.HTTP_HX_REQUEST %}
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 
@@ -8,6 +9,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}نظام إدارة الشركة{% endblock %}</title>
+    <script src="https://unpkg.com/htmx.org@1.7.0"></script>
 
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -25,13 +27,18 @@
 <body class="d-flex flex-column min-vh-100">
     <!-- Navigation Bar -->
     {% include 'navbar.html' with user=user %}
-
+    
     <!-- Main Content -->
     <main class="flex-grow-1">
-        <div class="pt-5"></div>
+        <div class="pt-5" id="content">
+{% endif %}
+
         {% block content %}
-        <!-- محتوى سيتم تجاوزه في القوالب الفرعية -->
+        <!-- سيتم استبدال هذا المحتوى في القوالب الفرعية -->
         {% endblock %}
+
+{% if not request.META.HTTP_HX_REQUEST %}
+        </div>
     </main>
 
     <!-- Footer -->
@@ -49,3 +56,4 @@
 </body>
 
 </html>
+{% endif %}

@@ -1,8 +1,6 @@
-{% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% block title %}تسجيل الدخول{% endblock %}
 
-{% block content %}
 {% if user.is_authenticated %}
     <script>
         window.location.href = "{% url 'profile_detail' %}";
@@ -14,7 +12,7 @@
         <div class="text-center">
             <h2 class="mb-4 text-primary">تسجيل الدخول</h2>
         </div>
-        <form method="post">
+        <form method="post" >
             {% csrf_token %}
             {{form|crispy}}
             <button type="submit" class="btn btn-primary w-100">دخول</button>
@@ -30,4 +28,3 @@
     </div>
 </div>
 {% endif %}
-{% endblock %}

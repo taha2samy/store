@@ -5,17 +5,22 @@
 <div class="container">
     <h1>{% if form.instance.id %}تعديل فئة{% else %}إضافة فئة جديدة{% endif %}</h1>
 
-    <form method="post">
+    <form >
         {% csrf_token %}
         
         <!-- استخدام crispy لتنسيق النموذج بالكامل -->
         <div class="mb-3">
             {{ form|crispy }}
         </div>
-
-        <button type="submit" class="btn btn-primary">
+{% if form.instance.id %}
+        <button type="submit" class="btn btn-primary" hx-post="{% url 'category_update' form.instance.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
             حفظ
         </button>
+{% else %}
+<button type="submit" class="btn btn-primary" hx-post="{% url 'category_create' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
+    انشاء
+</button>
+{% endif %}
         <a href="{% url 'category_list' %}" class="btn btn-secondary">
             إلغاء
         </a>
