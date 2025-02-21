@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block title %}قائمة فواتير الشراء{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    {% if messages %}
+    <div class="my-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <h1 class="my-4">قائمة فواتير الشراء</h1>
+
+    <!-- زر إضافة فاتورة شراء جديدة -->
+    <a href="{% url 'purchase_create' %}" class="btn btn-primary mb-3">
+        <i class="fas fa-plus me-1"></i>
+        إضافة فاتورة شراء جديدة
+    </a>
+
+    <!-- واجهة التصفية -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-filter me-1"></i>
+            تصفية فواتير الشراء
+        </div>
+        <div class="card-body">
+            <form method="get" class="filter-form">
+                <div class="card p-4 shadow-sm">
+                    <h5 class="card-title">فلترة فواتير الشراء</h5>
+                    <div class="row g-3">
+                        <!-- حقل البحث عن رقم الفاتورة -->
+                        <div class="col-md-6">
+                            <label for="id_invoice_number" class="form-label">رقم الفاتورة</label>
+                            <input type="text" id="id_invoice_number" name="invoice_number" class="form-control" placeholder="بحث برقم الفاتورة" value="{{ request.GET.invoice_number }}">
+                        </div>
+
+                        <!-- حقل البحث عن المورد -->
+                        <div class="col-md-6">
+                            <label for="id_supplier" class="form-label">المورد</label>
+                            <select id="id_supplier" name="supplier" class="form-select">
+                                <option value="">اختر المورد</option>
+                                {% for supplier in supplier_queryset %}
+                                <option value="{{ supplier.id }}" {% if request.GET.supplier == supplier.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ supplier.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- حقل تاريخ الشراء -->
+    
+
+                        <div class="col-md-6">
+                            <label for="id_purchase_date" class="form-label">تاريخ الشراء (من - إلى)</label>
+                            <div class="input-group">
+                                <input type="date" id="id_purchase_date_after" name="purchase_date_after" class="form-control" placeholder="من" value="{{ request.GET.purchase_date_after }}">
+                                <span class="input-group-text">-</span>
+                                <input type="date" id="id_purchase_date_before" name="purchase_date_before" class="form-control" placeholder="إلى" value="{{ request.GET.purchase_date_before }}">
+                            </div>
+                        </div>
+
+                        <!-- حقل المبلغ الإجمالي -->
+                        <div class="col-md-6">
+                            <label for="id_total_amount" class="form-label">المبلغ الإجمالي (من - إلى)</label>
+                            <div class="input-group">
+                                <input type="number" id="id_total_amount_min" name="total_amount_min" class="form-control" placeholder="من" value="{{ request.GET.total_amount_min }}">
+                                <span class="input-group-text">-</span>
+                                <input type="number" id="id_total_amount_max" name="total_amount_max" class="form-control" placeholder="إلى" value="{{ request.GET.total_amount_max }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- أزرار التطبيق وإعادة التعيين -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="submit" class="btn btn-primary">تطبيق الفلاتر</button>
+                        <a href="{% url 'purchase_list' %}" class="btn btn-secondary">إعادة تعيين</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- جدول فواتير الشراء -->
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>
+                    <a href="?sort={% if request.GET.sort == 'invoice_number' %}-invoice_number{% else %}invoice_number{% endif %}">
+                        رقم الفاتورة {% if request.GET.sort == 'invoice_number' %}↑{% elif request.GET.sort == '-invoice_number' %}↓{% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="?sort={% if request.GET.sort == 'supplier' %}-supplier{% else %}supplier{% endif %}">
+                        المورد {% if request.GET.sort == 'supplier' %}↑{% elif request.GET.sort == '-supplier' %}↓{% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="?sort={% if request.GET.sort == 'purchase_date' %}-purchase_date{% else %}purchase_date{% endif %}">
+                        تاريخ الشراء {% if request.GET.sort == 'purchase_date' %}↑{% elif request.GET.sort == '-purchase_date' %}↓{% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="?sort={% if request.GET.sort == 'total_amount' %}-total_amount{% else %}total_amount{% endif %}">
+                        المبلغ الإجمالي {% if request.GET.sort == 'total_amount' %}↑{% elif request.GET.sort == '-total_amount' %}↓{% endif %}
+                    </a>
+                </th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for invoice in object_list %}
+            <tr>
+                <td>{{ invoice.invoice_number }}</td>
+                <td>{{ invoice.supplier.name }}</td>
+                <td>{{ invoice.purchase_date|date:"Y-m-d" }}</td>
+                <td>{{ invoice.total_amount|floatformat:2 }}</td>
+                <td>
+                    <a href="{% url 'purchase_detail' invoice.id %}" class="btn btn-sm btn-info">
+                        <i class="fas fa-eye me-1"></i>
+                        التفصيل
+                    </a>
+                    <a href="{% url 'purchase_update' invoice.id %}" class="btn btn-sm btn-warning">
+                        <i class="fas fa-edit me-1"></i>
+                        تعديل
+                    </a>
+    
+
+                    <a href="{% url 'purchase_delete' invoice.id %}" class="btn btn-sm btn-danger">
+                        <i class="fas fa-trash me-1"></i>
+                        حذف
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">لا توجد فواتير شراء متاحة.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- الترقيم (Pagination) -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="السابق">
+                    <span aria-hidden="true">«</span>
+                </a>
+            </li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+            </li>
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="التالي">
+                    <span aria-hidden="true">»</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+{% endblock %}

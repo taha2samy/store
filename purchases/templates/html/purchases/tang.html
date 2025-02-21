@@ -1,0 +1,29 @@
+
+
+<tr>
+    <td><label  class="form-label">ثمن الشراء:</label></td>
+    <td><input type="number" id="pruchase_price"  value = "1" step="any" class="form-control" ></td>
+    
+</tr>
+<tr>
+    <td><label  class="form-label">الكمية:</label></td>
+    <td><input type="number" id="quantity"  value = "1" step="any" class="form-control" ></td>
+    
+</tr>
+<tr>
+    <td><label  class="form-label"></label>عدد {{data.sub_element.name}}</td>
+    <td><input type="number" id="sub_element_quantity" value = "{{data.sub_element_quantity}}" class="form-control" ></td>
+</tr>
+
+<tr>
+    <td><label class="form-label">الصنف</label></td>
+    <td><input type="text" id="category"  class="form-control"  disabled  value="{{data.name}}"></td>
+</tr>
+<tr>
+    <td><label class="form-label">الوحدة الفرعية</label></td>
+    <td><input type="text" id="element"  class="form-control" disabled value="{{data.sub_element.name}}"> </td>
+</tr>
+<input hidden id="category_id"  value="{{data.id}}">
+<input hidden id="sub_element_quantity_value" value="{{data.sub_element_quantity}}">
+
+

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}تسجيل الدخول{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+    <script>
+        window.location.href = "{% url 'profile_detail' %}";
+    </script>
+
+{% else %}
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow-lg p-4 w-100" style="max-width: 400px; border-radius: 15px;">
+        <div class="text-center">
+            <h2 class="mb-4 text-primary">تسجيل الدخول</h2>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            {{form|crispy}}
+            <button type="submit" class="btn btn-primary w-100">دخول</button>
+        </form>
+        <div class="mt-4 text-center">
+            <p class="mb-0">
+                ليس لديك حساب؟ <a href="#" class="text-primary">إنشاء حساب</a>
+            </p>
+            <p class="mt-2">
+                <a href="#" class="text-muted">هل نسيت كلمة المرور؟</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

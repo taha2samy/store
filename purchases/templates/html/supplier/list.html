@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}قائمة الموردين{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% if messages %}
+    <div class="my-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <h1 class="my-4">قائمة الموردين</h1>
+    
+    <!-- زر إضافة مورد جديد -->
+    <a href="{% url 'supplier_create' %}" class="btn btn-primary mb-3">
+        <i class="fas fa-plus me-1"></i>
+        إضافة مورد جديد
+    </a>
+
+    <!-- حقل البحث -->
+
+ <!-- واجهة التصفية -->
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-filter me-1"></i>
+        تصفية الموردين
+    </div>
+    <div class="card-body">
+        <form method="get" class="filter-form">
+            <div class="card p-4 shadow-sm">
+                <h5 class="card-title">فلترة الموردين</h5>
+                <div class="row g-3">
+                    <!-- حقل البحث عن الاسم -->
+                    <div class="col-md-6">
+                        <label for="id_name" class="form-label">الاسم</label>
+                        <input type="text" id="id_name" name="name" class="form-control" placeholder="بحث بالاسم" value="{{ request.GET.name }}">
+                    </div>
+
+                    <!-- حقل معلومات الاتصال -->
+                    <div class="col-md-6">
+                        <label for="id_contact_info" class="form-label">معلومات الاتصال</label>
+                        <input type="text" id="id_contact_info" name="contact_info" class="form-control" placeholder="بحث بمعلومات الاتصال" value="{{ request.GET.contact_info }}">
+                    </div>
+                </div>
+
+                <!-- أزرار التطبيق وإعادة التعيين -->
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-primary">تطبيق الفلاتر</button>
+                    <a href="{% url 'supplier_list' %}" class="btn btn-secondary">إعادة تعيين</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+    <!-- جدول الموردين -->
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>          <a href="?sort={% if request.GET.sort == 'name' %}-name{% else %}name{% endif %}">
+                    الاسم {% if request.GET.sort == 'name' %}↑{% elif request.GET.sort == '-name' %}↓{% endif %}
+                </a></th>
+                <th>معلومات الاتصال</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for supplier in suppliers %}
+            <tr>
+                <td>{{ supplier.name }}</td>
+                <td>{{ supplier.contact_info }}</td>
+                <td>
+                    <a href="{% url 'supplier_update' supplier.id %}" class="btn btn-sm btn-warning">
+                        <i class="fas fa-edit me-1"></i>
+                        تعديل
+                    </a>
+                    <a href="{% url 'supplier_delete' supplier.id %}" class="btn btn-sm btn-danger">
+                        <i class="fas fa-trash me-1"></i>
+                        حذف
+                    </a>
+                    <a href="{% url 'supplier_detail' supplier.id %}" class="btn btn-sm btn-info">
+                        <i class="fas fa-eye me-1"></i>
+                        رؤية التفصيل
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- الترقيم (Pagination) -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="السابق">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+            </li>
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="التالي">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

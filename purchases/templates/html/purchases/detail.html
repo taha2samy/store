@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static math %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- عنوان الصفحة -->
+    <h1 class="text-center mb-4">تفاصيل فاتورة الشراء</h1>
+
+    <!-- بطاقة تفاصيل الفاتورة -->
+    <div class="card shadow-lg mb-5">
+        <div class="card-header bg-primary text-white">
+            <h4 class="card-title mb-0">معلومات الفاتورة</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>رقم الفاتورة:</strong> {{ invoice.id }}</p>
+                    <p><strong>التاريخ:</strong> {{ invoice.purchase_date|date:"Y-m-d" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>المورد:</strong> {{ invoice.supplier.name }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- جدول العناصر -->
+    <div class="card shadow-lg">
+        <div class="card-header bg-info text-white">
+            <h4 class="card-title mb-0">العناصر المشتراة</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>المنتج</th>
+                            <th>الكمية</th>
+                            <th>سعر الشراء</th>
+                            <th>الكمية الفرعية</th>
+                            <th>المجموع</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {% for item in items %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ item.category.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.purchase_price }}</td>
+                            <td>{{ item.sub_element_quantity }}</td>
+                            <td>{{ item.total_price|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-primary">
+                            <td colspan="4" class="text-end"><strong>الإجمالي</strong></td>
+                            <td colspan="2" class="text-center"><strong>{{ total_price }}</strong></td>
+                        </tr>
+                        
+                    </tfoot>
+            
+
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- أزرار إضافية -->
+    <div class="mt-4 text-center">
+        <a href="{% url 'purchase_list' %}" class="btn btn-secondary">العودة إلى القائمة</a>
+        <a href="#" class="btn btn-primary">تحميل الفاتورة</a>
+    </div>
+</div>
+{% endblock %}

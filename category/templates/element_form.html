@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+{% if form.instance.pk %}
+تعديل العنصر  
+
+{{ form.instance.name }}
+{% else %}
+إنشاء عنصر  جديد
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">
+        {% if form.instance.pk %}
+        {% if name == 'category_element' %}
+        <i class="fas fa-boxes"></i>
+
+            تعديل العنصر الرئيسي 
+        {% else %}
+        <i class="fas fa-box" ></i>
+
+            تعديل العنصر الفرعي 
+        {% endif %}
+        <br>
+        {{ form.instance.name }}
+    {% else %}
+        {% if name == 'category_element' %}
+        <i class="fas fa-boxes" style="color: green;"></i>
+            إنشاء عنصر رئيسي جديد
+        {% else %}
+        <i class="fas fa-box" style="color: green;"></i>
+            إنشاء عنصر فرعي جديد
+        {% endif %}
+    {% endif %}
+    
+    </h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-save"></i> حفظ
+        </button>
+        {% if name == 'category_element' %}
+        <a href="{% url 'main_element_list' %}" class="btn btn-secondary">
+            <i class="fas fa-times"></i> إلغاء
+        </a>
+        {% else %}
+        <a href="{% url 'sub_element_list' %}" class="btn btn-secondary">
+            <i class="fas fa-times"></i> إلغاء
+        </a>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}

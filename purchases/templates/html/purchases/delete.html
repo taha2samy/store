@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="font-family: Arial, sans-serif; margin: 0 auto; width: 50%;">
+    <h2 class="text-center">تأكيد حذف الفاتورة</h2>
+    <hr>
+    <p>هل أنت متأكد أنك تريد حذف الفاتورة التالية؟</p>
+
+    <div>
+        <p><strong>رقم الفاتورة:</strong> {{ invoice.id }}</p>
+        <p><strong>التاريخ:</strong> {{ invoice.purchase_date|date:"Y-m-d" }}</p>
+        <p><strong>المورد:</strong> {{ invoice.supplier.name }}</p>
+        <p><strong>الإجمالي:</strong> {{ total_price }}</p>
+    </div>
+    <hr>
+
+    <!-- أزرار التأكيد أو الإلغاء -->
+    <div class="text-center">
+        <form method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">تأكيد الحذف</button>
+        </form>
+        <a href="{% url 'purchase_list' %}" class="btn btn-secondary">إلغاء</a>
+    </div>
+</div>
+{% endblock %}

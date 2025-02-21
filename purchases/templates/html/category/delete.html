@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}حذف الفئة{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">حذف الفئة</h1>
+    <p>هل أنت متأكد من حذف الفئة "{{ object.name }}"؟</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash me-1"></i>
+            تأكيد الحذف
+        </button>
+        <a href="{% url 'category_list' %}" class="btn btn-secondary">
+            <i class="fas fa-times me-1"></i>
+            إلغاء
+        </a>
+    </form>
+</div>
+{% endblock %}

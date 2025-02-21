@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}
+    {% if form.instance.pk %}تعديل مورد{% else %}إضافة مورد جديد{% endif %}
+{% endblock %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<div class="container">
+    {% if messages %}
+    <div class="my-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <h1 class="my-4">
+        {% if form.instance.pk %}تعديل مورد{% else %}إضافة مورد جديد{% endif %}
+    </h1>
+
+    <!-- زر العودة إلى القائمة -->
+    <a href="{% url 'supplier_list' %}" class="btn btn-secondary mb-3">
+        <i class="fas fa-arrow-left me-1"></i>
+        العودة إلى القائمة
+    </a>
+
+    <!-- نموذج إضافة/تعديل مورد -->
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-plus me-1"></i>
+            تفاصيل المورد
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    {{ form|crispy }}
+         
+                </div>
+
+                <!-- حقول أرقام الهواتف -->
+                <div class="mb-3">
+                    <label class="form-label">أرقام الهواتف</label>
+                    <div id="phone-numbers-container">
+                        {% for inline_form in inlines %}
+                            {% for phone_form in inline_form %}
+                                <div class="card mb-3 phone-number-form">
+                                    <div class="card-body">
+                                        {{ phone_form.id }}
+                                        {{ phone_form.number|as_crispy_field }}
+                                        {% if phone_form.instance.pk %}
+                                            <label class="form-check-label">
+                                                <input type="checkbox" name="{{ phone_form.prefix }}-DELETE" class="form-check-input">
+                                                حذف
+                                            </label>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            {{ inline_form.management_form }}
+                        {% endfor %}
+                    </div>
+                    <!-- زر إضافة رقم هاتف جديد -->
+                    <button type="button" id="add-phone-number" class="btn btn-success">
+                        <i class="fas fa-plus me-1"></i>
+                        إضافة رقم هاتف جديد
+                    </button>
+                </div>
+                
+                <!-- أزرار الحفظ والإلغاء -->
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>
+                        حفظ
+                    </button>
+                    <a href="{% url 'supplier_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-times me-1"></i>
+                        إلغاء
+                    </a>
+                </div>
+                
+                <!-- JavaScript لإضافة حقول أرقام الهواتف -->
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const phoneNumbersContainer = document.getElementById('phone-numbers-container');
+                    const addPhoneNumberButton = document.getElementById('add-phone-number');
+                    const totalForms = document.getElementById('id_purchases-phonenumber-content_type-object_id-TOTAL_FORMS');
+                    let formCount = parseInt(totalForms.value);
+                
+                    addPhoneNumberButton.addEventListener('click', function() {
+                        const newForm = document.createElement('div');
+                        newForm.classList.add('card', 'mb-3', 'phone-number-form');
+                        newForm.innerHTML = `
+                            <div class="card-body">
+                                <input type="hidden" name="purchases-phonenumber-content_type-object_id-${formCount}-id" id="id_purchases-phonenumber-content_type-object_id-${formCount}-id">
+                                <input type="text" name="purchases-phonenumber-content_type-object_id-${formCount}-number" class="form-control mb-2" placeholder="أدخل رقم الهاتف" maxlength="15">
+                                <label class="form-check-label">
+                                    <input type="checkbox" name="purchases-phonenumber-content_type-object_id-${formCount}-DELETE" class="form-check-input">
+                                    حذف
+                                </label>
+                            </div>
+                        `;
+                        phoneNumbersContainer.appendChild(newForm);
+                        formCount++;
+                        totalForms.value = formCount; // تحديث العدد الإجمالي للنماذج
+                    });
+                });
+                </script>
+                
+{% endblock %}

@@ -1,0 +1,85 @@
+<tr>
+    <td>
+      <select name="items-${n}-category" class="form-control" placeholder="اختر الفئة" aria-describedby="id_items-${n}-category_helptext" id="id_items-${n}-category">
+        <option selected value="{category_id}">${category}</option>
+   
+    </td>
+    <td>
+      <input type="number"  value = "${pruchase_price}"name="items-${n}-purchase_price" class="form-control" placeholder="أدخل سعر الشراء" step="0.01" aria-describedby="id_items-${n}-purchase_price_helptext" id="id_items-${n}-purchase_price">
+    </td>
+    <td>
+      <input type="number"  value = "${quantity}" name="items-${n}-quantity" class="form-control" placeholder="أدخل الكمية" min="0" aria-describedby="id_items-${n}-quantity_helptext" id="id_items-${n}-quantity">
+    </td>
+    <td>
+      <input type="number" value="${sub_element_quantity}"  name="items-${n}-sub_element_quantity" class="form-control" placeholder="أدخل الكمية الفرعية" min="0" aria-describedby="id_items-${n}-sub_element_quantity_helptext" id="id_items-${n}-sub_element_quantity">
+    </td>
+    <input type="hidden" name="items-${n}-invoice" id="id_items-${n}-invoice">
+    <input type="hidden" name="items-${n}-id" id="id_items-${n}-id">
+    <td>
+      <input type="checkbox" name="items-${n}-DELETE" id="id_items-${n}-DELETE">
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          const element = document.getElementById("id_items-${n}-DELETE");
+          if (element) {
+            element.addEventListener('change', function() {
+              const parentTr = element.closest('tr');
+              const parentTable = parentTr ? parentTr.closest('table') : null;
+              if (parentTable) {
+                if (element.checked) {
+                  parentTr.style.display = 'none';
+                } else {
+                  parentTr.style.display = '';
+                }
+              }
+            });
+          }
+        });
+      </script>
+    </td>
+  </tr>
+  
+
+
+
+
+
+<script>
+
+  function addRow(category, purchasePrice, quantity, subElementQuantity) {
+    // التأكد من أن جميع الحقول تم ملؤها
+    if (!category || !purchasePrice || !quantity || !subElementQuantity) {
+      alert('يرجى ملء جميع الحقول');
+      return;
+    }
+
+    rowCounter++; // زيادة عداد الصفوف
+    
+    // إنشاء صف جديد
+    const newRow = document.createElement('tr');
+
+    // إضافة HTML للصف باستخدام القيم المدخلة
+    newRow.innerHTML = `
+      <td>
+        <input type="text" value="${category}" name="items-${rowCounter}-category" class="form-control" placeholder="أدخل الفئة" id="id_items-${rowCounter}-category">
+      </td>
+      <td>
+        <input type="number" value="${purchasePrice}" name="items-${rowCounter}-purchase_price" class="form-control" placeholder="أدخل سعر الشراء" step="0.01" id="id_items-${rowCounter}-purchase_price">
+      </td>
+      <td>
+        <input type="number" value="${quantity}" name="items-${rowCounter}-quantity" class="form-control" placeholder="أدخل الكمية" min="0" id="id_items-${rowCounter}-quantity">
+      </td>
+      <td>
+        <input type="number" value="${subElementQuantity}" name="items-${rowCounter}-sub_element_quantity" class="form-control" placeholder="أدخل الكمية الفرعية" min="0" id="id_items-${rowCounter}-sub_element_quantity">
+      </td>
+      <input type="hidden" name="items-${rowCounter}-invoice" id="id_items-${rowCounter}-invoice">
+      <input type="hidden" name="items-${rowCounter}-id" id="id_items-${rowCounter}-id">
+      <td>
+        <input type="checkbox" name="items-${rowCounter}-DELETE" id="id_items-${rowCounter}-DELETE">
+      </td>
+    `;
+
+    // إضافة الصف الجديد إلى الجدول
+    // مسح الحقول بعد إضافة الصف
+      return newRow
+  }
+</script>

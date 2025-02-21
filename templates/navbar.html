@@ -1,0 +1,102 @@
+{% load profile_tags %}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary shadow-lg">
+    <div class="container-fluid">
+        <!-- العلامة التجارية -->
+        <a class="navbar-brand d-flex align-items-center" href="% url 'home' %">
+            <i class="fas fa-building me-2"></i>
+            <span>نظام إدارة الشركة</span>
+        </a>
+
+        <!-- زر التبديل للهواتف -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- محتوى القائمة -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0" data-bs-auto-close="outside">
+                <!-- قائمة منسدلة للأصناف -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="categoriesDropdown" role="button" data-bs-auto-close="outside"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-tags me-1"></i> الأصناف
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                        <li><a class="dropdown-item" href="{% url 'category_list' %}">
+                            <i class="fas fa-list me-1"></i> الأصناف الرئيسية
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'main_element_list' %}">
+                            <i class="fas fa-boxes me-1"></i> الوحدات الرئيسية
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'sub_element_list' %}">
+                            <i class="fas fa-box me-1"></i> الوحدات الفرعية
+                        </a></li>
+                    </ul>
+                </li>
+
+                <!-- قائمة منسدلة للمخزن -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="storeDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-warehouse me-1"></i> المخزن
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="storeDropdown">
+                        <li><a class="dropdown-item" href="{% url 'supplier_list' %}">
+                            <i class="fas fa-truck me-1"></i> الموردون
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'purchase_list' %}">
+                            <i class="fas fa-file-invoice me-1"></i> فواتير الشراء
+                        </a></li>
+                        <li><a class="dropdown-item" href="% url 'store_list' %">
+                            <i class="fas fa-boxes me-1"></i> إدارة المخزن
+                        </a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <!-- صورة المستخدم -->
+            <div class="d-flex align-items-center">
+                {% if user.is_authenticated %}
+                <!-- قائمة منسدلة للمستخدم -->
+                <div class="dropdown">
+                    <a  id ="navebarprofile"class="nav-link dropdown-toggle d-flex align-items-center text-decoration-none justify-content-between" 
+                    href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="d-flex flex-column text-start" style="padding-left: 2rem;">
+                        <span class="fw-bold" style="font-size: 1rem;">{{ user|get_profile|get_field:'name_in_arabic' }}</span>
+                    </div>
+                    {% if user|get_profile %}
+                        <img src="{{ user|get_profile|get_field:'image.url' }}" alt="User Image" 
+                            class="rounded-circle shadow ms-2" width="50" height="50" 
+                            style="object-fit: cover; border: 2px solid #ccc;">
+                    {% else %}
+                        <i class="fas fa-user-circle text-secondary ms-2" style="font-size: 50px;"></i>
+                    {% endif %}
+                </a>
+                
+                          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li>
+                            <a class="dropdown-item" href="{% url 'profile_detail' %}">
+                                <i class="fas fa-user-circle me-1"></i> الملف الشخصي
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'logout_reset' %}">
+                                <i class="fas fa-sign-out-alt me-1"></i> تسجيل الخروج
+                            </a>
+                        </li>
+                    </ul>
+                    
+                </div>
+                {% else %}
+                <!-- أزرار تسجيل الدخول والتسجيل -->
+                <a class="btn btn-outline-light me-2" href="{% url 'login' %}">
+                    <i class="fas fa-sign-in-alt me-1"></i> تسجيل الدخول
+                </a>
+      
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>

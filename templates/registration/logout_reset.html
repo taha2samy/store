@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}تأكيد تسجيل الخروج{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5 d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="card shadow-lg border-0 rounded-3" style="max-width: 500px; width: 100%;">
+        <div class="card-body text-center p-4">
+            <h3 class="card-title mb-4 text-danger">تأكيد تسجيل الخروج</h3>
+            <p class="card-text text-muted mb-4">هل أنت متأكد أنك تريد تسجيل الخروج؟</p>
+            <form method="post" action="{% url 'logout' %}" class="d-flex justify-content-center gap-3">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger px-4">تسجيل الخروج</button>
+                <a href="javascript:history.back()" class="btn btn-outline-secondary px-4">إلغاء</a>
+            </form>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
+

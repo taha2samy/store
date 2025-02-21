@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}حذف العنصر{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">حذف العنصر</h1>
+    <p class="text-center">هل أنت متأكد من حذف العنصر "{{ object.name }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="text-center">
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash"></i> نعم، احذف
+            </button>
+            <a href="{% url 'main_element_list' %}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> إلغاء
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

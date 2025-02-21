@@ -1,0 +1,12 @@
+{% for option in options %}
+<div class="search-item px-3 py-2"style="cursor: pointer; display: flex; align-items: center; gap: 10px;">
+   <p>{{ option.name }}</p>
+<input hidden name="categoy" value="{{ option.name }}" label="{{ option.id }}">
+<input hidden name="element" value="{{ option.element }}" label="{{option.element.id}}">
+<input hidden name="subelement" value="{{ option.sub_element }}" label="{{option.sub_element.id}}" count="{{option.sub_element_quantity}}">
+<input hidden name="sub_element_quantity" value="{{ option.sub_element_quantity }}" label="{{option.sub_element_quantity}}">
+  </div>
+  
+{% endfor %}
+
+

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}تفاصيل المورد - {{ supplier.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-16">
+    <div class="row justify-content-center">
+        <div class="col-md-16">
+            <div class="card shadow-lg">
+                <!-- رأس البطاقة -->
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-user-tie me-2"></i>
+                        تفاصيل المورد: {{ supplier.name }}
+                    </h4>
+                </div>
+
+                <!-- جسم البطاقة -->
+                <div class="card-body">
+                    <!-- معلومات المورد -->
+                    <div class="mb-4">
+                        <h5 class="text-primary">
+                            <i class="fas fa-info-circle me-2"></i>
+                            المعلومات الأساسية
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>الاسم:</strong> {{ supplier.name }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>معلومات الاتصال:</strong> {{ supplier.contact_info }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- أرقام الهواتف -->
+                    <div class="mb-4">
+                        <h5 class="text-primary">
+                            <i class="fas fa-phone me-2"></i>
+                            أرقام الهواتف
+                        </h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>رقم الهاتف</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for phone in phone_numbers %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ phone.number }}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="2" class="text-center">لا يوجد أرقام هاتف مسجلة.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- أزرار الإجراءات -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'supplier_update' supplier.id %}" class="btn btn-warning">
+                            <i class="fas fa-edit me-2"></i>
+                            تعديل
+                        </a>
+                        <a href="{% url 'supplier_delete' supplier.id %}" class="btn btn-danger">
+                            <i class="fas fa-trash me-2"></i>
+                            حذف
+                        </a>
+                        <a href="{% url 'supplier_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            العودة إلى القائمة
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

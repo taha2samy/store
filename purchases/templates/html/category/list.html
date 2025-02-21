@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+
+{% block title %}قائمة الفئات{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    {% if messages %}
+    <div class="my-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <h1 class="my-4">قائمة الفئات</h1>
+
+    <!-- زر إضافة فئة جديدة -->
+    <a href="{% url 'category_create' %}" class="btn btn-primary mb-3">
+        <i class="fas fa-plus me-1"></i>
+        إضافة فئة جديدة
+    </a>
+
+
+
+    <!-- واجهة التصفية -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-filter me-1"></i>
+            تصفية الفئات
+        </div>
+        <div class="card-body">
+            <form method="get">
+                <form method="get" class="filter-form">
+                    <div class="card p-4 shadow-sm">
+                        <h5 class="card-title">فلترة الفئات</h5>
+                        <div class="row g-3">
+                            <!-- حقل البحث عن الاسم -->
+                            <div class="col-md-6">
+                                <label for="id_name" class="form-label">الاسم</label>
+                                <input type="text" id="id_name" name="name" class="form-control" placeholder="بحث بالاسم" value="{{ request.GET.name }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_element" class="form-label">العنصر الرئيسي</label>
+                                <select id="id_element" name="element" class="form-select">
+                                    <option value="">اختر العنصر الرئيسي</option>
+                                    {% for category in element_queryset %}
+                                    <option value="{{ category.id }}" {% if request.GET.element == category.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ category.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                
+                            <!-- حقل سعر البيع -->
+                            <div class="col-md-6">
+                                <label for="id_sell_price_min" class="form-label">سعر البيع (من - إلى)</label>
+                                <div class="input-group">
+                                    <input type="number" id="id_sell_price_min" name="sell_price_min" class="form-control" placeholder="من" value="{{ request.GET.sell_price_min }}">
+                                    <span class="input-group-text">-</span>
+                                    <input type="number" id="id_sell_price_max" name="sell_price_max" class="form-control" placeholder="إلى" value="{{ request.GET.sell_price_max }}">
+                                </div>
+                            </div>
+                
+                            <!-- حقل العدد الإجمالي -->
+                            <div class="col-md-6">
+                                <label for="id_total_items_min" class="form-label">العدد الإجمالي (من - إلى)</label>
+                                <div class="input-group">
+                                    <input type="number" id="id_total_items_min" name="total_items_min" class="form-control" placeholder="من" value="{{ request.GET.total_items_min }}">
+                                    <span class="input-group-text">-</span>
+                                    <input type="number" id="id_total_items_max" name="total_items_max" class="form-control" placeholder="إلى" value="{{ request.GET.total_items_max }}">
+                                </div>
+                            </div>
+                
+                            <!-- حقل العنصر الفرعي -->
+                            <div class="col-md-6">
+                                <label for="id_sub_element" class="form-label">العنصر الفرعي</label>
+                                <select id="id_sub_element" name="sub_element" class="form-select">
+                                    <option value="">اختر العنصر</option>
+                                    {% for category in sub_element_queryset %}
+                                    <option value="{{ category.id }}" {% if request.GET.sub_element == category.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ category.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                
+                        <!-- أزرار التطبيق وإعادة التعيين -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="submit" class="btn btn-primary">تطبيق الفلاتر</button>
+                            <a href="{% url 'category_list' %}" class="btn btn-secondary">إعادة تعيين</a>
+                        </div>
+                    </div>
+                </form>
+                
+            </form>
+        </div>
+    </div>
+
+    <!-- جدول الفئات -->
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>
+                    <a href="?sort={% if request.GET.sort == 'name' %}-name{% else %}name{% endif %}">
+                        الاسم {% if request.GET.sort == 'name' %}↑{% elif request.GET.sort == '-name' %}↓{% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="?sort={% if request.GET.sort == 'sell_price' %}-sell_price{% else %}sell_price{% endif %}">
+                        سعر البيع {% if request.GET.sort == 'sell_price' %}↑{% elif request.GET.sort == '-sell_price' %}↓{% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="?sort={% if request.GET.sort == 'element' %}-element{% else %}element{% endif %}">
+                        العنصر {% if request.GET.sort == 'element' %}↑{% elif request.GET.sort == '-element' %}↓{% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="?sort={% if request.GET.sort == 'total_items' %}-total_items{% else %}total_items{% endif %}">
+                        الأعداد الموجودة {% if request.GET.sort == 'total_items' %}↑{% elif request.GET.sort == '-total_items' %}↓{% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="?sort={% if request.GET.sort == 'sub_element_quantity' %}-sub_element_quantity{% else %}sub_element_quantity{% endif %}">
+                        الأعداد الفرعية {% if request.GET.sort == 'sub_element_quantity' %}↑{% elif request.GET.sort == '-sub_element_quantity' %}↓{% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="?sort={% if request.GET.sort == 'sub_element' %}-sub_element{% else %}sub_element{% endif %}">
+                        العنصر الفرعي {% if request.GET.sort == 'sub_element' %}↑{% elif request.GET.sort == '-sub_element' %}↓{% endif %}
+                    </a>
+                </th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            {% for category in categories %}
+            <tr>
+                <td>{{ category.name }}</td>
+                <td>{{ category.sell_price }}</td>
+                <td>{{ category.element }}</td>
+                <td>{{ category.total_items }}</td>
+                <td>{{ category.sub_element_quantity }}</td>
+                <td>{{ category.sub_element }}</td>
+
+                <td>
+                    <a href="{% url 'category_update' category.id %}" class="btn btn-sm btn-warning">
+                        <i class="fas fa-edit me-1"></i>
+                        تعديل
+                    </a>
+                    <a href="{% url 'category_delete' category.id %}" class="btn btn-sm btn-danger">
+                        <i class="fas fa-trash me-1"></i>
+                        حذف
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- الترقيم (Pagination) -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="السابق">
+                    <span aria-hidden="true">«</span>
+                </a>
+            </li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+            </li>
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="التالي">
+                    <span aria-hidden="true">»</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+{% endblock %}

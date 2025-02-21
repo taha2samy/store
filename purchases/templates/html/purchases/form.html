@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+<script src="{% static 'js/pruchases.js' %}"></script>
+
+<style>
+.hidden {
+    opacity: 0;
+    transition: opacity 0.5s ease; /* تأثير التلاشي */
+}
+
+</style>
+<div class="container">
+  <h2 class="mt-4">{% if form.instance.pk %}تعديل فاتورة شراء{% else %}إنشاء فاتورة شراء{% endif %}</h2>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <!-- Main Invoice Info -->
+    <div class="card mb-4">
+        <div class="card-header">
+          معلومات الفاتورة الرئيسية
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6" id="go_hell"> 
+                {% include 'html/purchases/a7a.html' %}
+                <button class="btn btn-primary btn-md" onclick="addTableRow(event)">أضف عنصر الى الفاتورة </button>
+
+            </div>
+            <div class="col-md-6">
+              {{ form |crispy}}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+    <!-- Invoice Items -->
+    <div class="card mb-4">
+      <div class="card-header">
+        بنود الفاتورة
+      </div>
+      <div class="card-body">
+        {{ inlines.management_form|crispy }}
+
+        {% for inline_form in inlines %}
+          <table class="table" id="items">
+            <thead>
+              <tr>
+               
+                  <th>الصنف</th>
+                  <th>سعر الشراء</th>
+                  <th>الكمية</th>
+                  <th>الكمية الفرعية</th>
+                  <th>السعر الكلي</th>
+                  <th>الحذف</th>
+
+                
+              </tr>
+            </thead>
+            <tbody>
+                {% for form in inline_form %}
+                
+                
+         
+              <tr>
+                {% for field in form %}
+                {% if not forloop.last %}
+
+           
+                {% if field.is_hidden %}
+                {{ field }}
+                {% else %}
+ 
+                  <td>
+                    
+                    
+                    
+                      {{ field|as_crispy_field }}
+                   
+                    
+                  </td>
+                  {% endif %}
+                  {% endif %}
+                  {% endfor %}
+
+
+                  {% for field in form %}
+                  {% if forloop.last %}
+                  <td>
+                    <div class="mb-3">
+                      <input type="number" id = "{{ field.id_for_label }}_total_price"  readonly disabled name="price" value="1.00" class="form-control numberinput" placeholder="أدخل سعر الشراء" step="0.01">
+                      <script>
+                          function calculateTotalPrice(fieldId) {
+                            // استخراج رقم العنصر من الـ fieldId
+                            const n = Number(fieldId.split("-")[1]);
+
+                            // الحصول على الحقول المطلوبة
+                            const subElementQuantity = document.getElementById(`id_items-${n}-sub_element_quantity`);
+                            const defaultSubElementQuantity = document.getElementById(`id_items-${n}-category_sub_element_quantity`);
+                            const quantity = document.getElementById(`id_items-${n}-quantity`);
+                            const purchasePrice = document.getElementById(`id_items-${n}-purchase_price`);
+                            const price = document.getElementById(`${fieldId}_total_price`);
+
+                            // التحقق من وجود القيم قبل الحساب
+                            if (
+                              subElementQuantity && defaultSubElementQuantity &&
+                              quantity && purchasePrice && price
+                            ) {
+                              // حساب السعر الكلي مع تقريب لأقرب رقمين عشريين
+                              const totalPrice = 
+                                Math.round(
+                                  (defaultSubElementQuantity.value/subElementQuantity.value) *
+                                  purchasePrice.value *
+                                  quantity.value *
+                                  100
+                                ) / 100;
+
+                              // تحديث القيمة
+                              price.value = totalPrice || 0; // تعيين 0 إذا كانت النتيجة غير صالحة
+                            }
+                            
+                          }
+
+                          // ربط الأحداث بالحقول
+                          function setupEventListeners(fieldId) {
+                            const n = Number(fieldId.split("-")[1]);
+                            const fieldIds = [
+                              `id_items-${n}-sub_element_quantity`,
+                              `id_items-${n}-category_sub_element_quantity`,
+                              `id_items-${n}-quantity`,
+                              `id_items-${n}-purchase_price`,
+                            ];
+
+                            fieldIds.forEach((id) => {
+                              const element = document.getElementById(id);
+                              if (element) {
+                                element.onchange = () => calculateTotalPrice(fieldId);
+                              }
+                            });
+                          }
+
+                          // التهيئة الأولية
+                          (function initialize() {
+                            const fieldId = "{{ field.id_for_label }}"; // قم بضبط هذا بناءً على إدخالك
+                            calculateTotalPrice(fieldId);
+                            setupEventListeners(fieldId);
+                          })();
+                      </script>
+    
+                    </div>
+
+                      <td>
+                         {{ field }}
+                        <script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Get the element by its ID
+    const element = document.getElementById("{{ field.id_for_label }}");
+
+    if (element) {
+        // Add event listener for 'change' event on the checkbox
+        element.addEventListener('change', function() {
+            // Check if the checkbox is checked
+            if (element.checked) {
+                // Find the closest <tr> that is inside a <table>
+                const parentTr = element.closest('tr');
+                const parentTable = parentTr ? parentTr.closest('table') : null;
+
+                // Ensure the parent <tr> is inside a <table> before hiding it
+                if (parentTable) {
+                    parentTr.classList.add('hidden'); // Add the class to trigger fade-out effect
+
+                    // Use a timeout to hide the element after the fade effect completes
+                    setTimeout(function() {
+                        parentTr.style.display = 'none'; // Now hide the element completely
+                    }, 500); // This should match the duration of the fade effect (0.5s)
+                }
+            } else {
+                // Optionally, show the parent again if unchecked
+                const parentTr = element.closest('tr');
+                const parentTable = parentTr ? parentTr.closest('table') : null;
+
+                // Ensure the parent <tr> is inside a <table> before showing it
+                if (parentTable) {
+                    parentTr.style.display = ''; // Reset display
+                    parentTr.classList.remove('hidden'); // Remove the fade-out effect
+                }
+            }
+        });
+    }
+});
+
+
+
+                            
+                        </script>
+                      </td>
+                  {% endif %}
+                {% endfor %}
+                  
+
+              </tr>
+     
+            {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr class="table-primary">
+                <td colspan="4" class="text-end"><strong>الإجمالي</strong></td>
+                <td colspan="2" class="text-center"><strong id="all_total_price">{{total_price}}<strong></td>
+            </tr>
+            
+            </tfoot>
+          </table>
+          {{ inline_form.management_form }}
+        {% endfor %}
+
+      
+      </div>
+    </div>
+
+    <!-- Submit and Cancel Buttons -->
+    <button type="submit" class="btn btn-primary" onclick="send()">{% if form.instance.pk %}تحديث{% else %}حفظ{% endif %}</button>
+    <script>
+        function send()
+        {
+            document.getElementById("go_hell").innerHTML=""
+        }
+    </script>
+    <a href="{% url 'purchase_list' %}" class="btn btn-secondary">إلغاء</a>
+  </form>
+</div>
+<h1>ddd</h1>
+<script>
+const numberInputs = document.querySelectorAll('table input[type="number"]:not([readonly]):not([disabled])');
+
+// إضافة event listener لجميع المدخلات
+numberInputs.forEach(input => {
+    input.addEventListener('change', all_total_price);
+});
+
+
+</script>
+{% endblock %}

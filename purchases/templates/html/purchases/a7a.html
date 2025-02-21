@@ -1,0 +1,166 @@
+
+<script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.js" integrity="sha384-oeUn82QNXPuVkGCkcrInrS1twIxKhkZiFfr2TdiuObZ3n3yIeMiqcRzkIcguaof1" crossorigin="anonymous"></script>
+                <div class="mb-3 position-relative">
+                    <form>
+                        <label for="searchable-input" class="form-label">قائمة الاصناف</label>
+                        <div class="search-container" name="ffuufu" id="aasd" style="position: relative;">
+                            <input 
+                                type="text" 
+                                id="searchable-input" 
+                                class="form-control" 
+                                placeholder="Type or select an option"
+                                hx-get="{% url 'search_results' %}" 
+                                hx-trigger="keyup changed delay:200ms" 
+                                hx-target="#search-dropdown" 
+                                hx-swap="innerHTML"
+                                name="searchable-input"
+                                byid="14"
+                                > 
+
+                            <div id="search-dropdown" 
+                                 class="search-dropdown bg-white border rounded" 
+                                 style="position: absolute; width: 100%; max-height: 200px; overflow-y: auto; z-index: 1000; display: none;">
+                            </div>
+                        </div>
+                        <input
+                        hidden 
+                        type="button" 
+                        id="hidden-input" 
+                        name="selected_item" 
+                        hx-trigger="click" 
+                        hx-get="{% url 'additional_action' %}" 
+                        hx-target="#response"
+                        hx-include="#searchable-input"
+                        hx-swap="innerHTML"
+                        hx-vars='{"byid": document.getElementById("searchable-input").getAttribute("byid")}'>
+                        <div><table class="table" id="response"></table></div>
+                
+                        
+
+                    <div id="error-message" 
+                         class="error-message text-danger mt-2" 
+                         style="display: none;">
+                         Invalid selection!
+                    </div>
+                </div>
+
+<script>
+    let currentIndex = -1;
+
+    // Handle dropdown content swap
+    document.addEventListener('htmx:afterSwap', (event) => {
+    if (event.detail.target.id === "search-dropdown") {
+        const dropdown = document.getElementById('search-dropdown');
+        const items = dropdown.querySelectorAll('.search-item');
+        var search = document.getElementById("searchable-input");
+
+        // تحقق إذا كانت قيمة الإدخال موجودة في القائمة
+        let itemFound = false;
+        items.forEach((item) => {
+            if (item.textContent.trim() === search.value.trim()) {
+                itemFound = true;
+            }
+        });
+
+        // إذا تم العثور على تطابق، يمكننا إخفاء القائمة (أو يمكن اتخاذ إجراء آخر مثل تحديد العنصر)
+        if (itemFound) {
+            dropdown.style.display = "none"; // إخفاء القائمة إذا كان العنصر موجودًا
+        } else {
+            dropdown.style.display = items.length > 0 ? "block" : "none"; // إظهار القائمة إذا كان هناك عناصر
+        }
+
+        // إضافة الأحداث للعناصر
+        items.forEach((item, index) => {
+           
+            item.dataset.index = index;
+            item.addEventListener('click', () => selectItem(item));
+        });
+    }
+});
+
+    // Keyboard navigation
+    document.getElementById('searchable-input').addEventListener('keydown', (event) => {
+        const dropdown = document.getElementById('search-dropdown');
+        const items = dropdown.querySelectorAll('.search-item');
+
+        if (items.length > 0) {
+            if (event.key === "ArrowDown") {
+                event.preventDefault();
+                currentIndex = (currentIndex + 1) % items.length;
+                highlightItem(items, currentIndex);
+            } else if (event.key === "ArrowUp") {
+                event.preventDefault();
+                currentIndex = (currentIndex - 1 + items.length) % items.length;
+                highlightItem(items, currentIndex);
+            } else if (event.key === "Enter") {
+                event.preventDefault();
+                if (currentIndex >= 0) {
+                    selectItem(items[currentIndex]);
+                } else {
+                    validateInput();
+                }
+            }
+        } else if (event.key === "Enter") {
+            event.preventDefault();
+            validateInput();
+        }
+    });
+
+    // Select item
+    function selectItem(item) {
+        const inputField = document.getElementById('searchable-input');
+        const dropdown = document.getElementById('search-dropdown');
+
+        if (item) {
+            const itemms = item; // Use the DOM element directly
+            inputField.setAttribute("byid",itemms.querySelector("input[name='categoy']").getAttribute("label"));
+            document.getElementById("hidden-input").value = itemms.querySelector("input[name='categoy']").getAttribute("label");
+            document.getElementById("hidden-input").click();
+            inputField.value = item.textContent.trim();
+            dropdown.style.display = "none";
+            clearError();
+        }
+    }
+
+    // Highlight item
+    function highlightItem(items, index) {
+        items.forEach(item => item.classList.remove('highlighted'));
+        items[index].classList.add('highlighted');
+        items[index].scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+
+    // Validate input
+    document.getElementById('searchable-input').addEventListener('blur', validateInput);
+
+    function validateInput() {
+        const inputField = document.getElementById('searchable-input');
+        const dropdown = document.getElementById('search-dropdown');
+        const items = Array.from(dropdown.querySelectorAll('.search-item')).map(item => item.textContent.trim());
+        const errorMessage = document.getElementById('error-message');
+        if (!items.includes(inputField.value.trim())) {
+            inputField.value = "";
+            errorMessage.style.display = "block";
+           
+        } else {
+            clearError();
+        }
+    }
+
+    // Clear error
+    function clearError() {
+        const errorMessage = document.getElementById('error-message');
+        errorMessage.style.display = "none";
+    }
+</script>
+
+<style>
+    .search-item {
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .search-item.highlighted {
+        background-color: #007BFF;
+        color: white;
+    }
+</style>

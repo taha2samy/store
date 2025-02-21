@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+تحديث الملف الشخصي
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white text-center">
+            <h2>تحديث الملف الشخصي</h2>
+        </div>
+        <div class="card-body">
+            <div class="text-center">
+            <img href="{{form.instance.image.url}}" class="profile-image"src="{{form.instance.image.url}}">
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+        
+                <div class="mb-4">
+                    <h4 class="text-primary">بيانات الملف الشخصي</h4>
+                    {{ form|crispy }}
+                </div>
+                
+                <div id="phone-numbers-container">
+                    {% for inline_form in inlines %}
+                        {% for phone_form in inline_form %}
+                            <div class="card mb-3 phone-number-form">
+                                <div class="card-body">
+                                    {{ phone_form.id }}
+                                    {{ phone_form.number|as_crispy_field }}
+                                    {% if phone_form.instance.pk %}
+                                        <label class="form-check-label">
+                                            <input type="checkbox" name="{{ phone_form.prefix }}-DELETE" class="form-check-input">
+                                            حذف
+                                        </label>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                        {{ inline_form.management_form }}
+                    {% endfor %}
+                </div>
+                <button type="button" id="add-phone-number" class="btn btn-success">
+                    <i class="fas fa-plus me-1"></i>
+                    إضافة رقم هاتف جديد
+                </button>
+                
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> حفظ التعديلات
+                    </button>
+                    <a href="{% url 'profile_detail' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> العودة
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const phoneNumbersContainer = document.getElementById('phone-numbers-container');
+        const addPhoneNumberButton = document.getElementById('add-phone-number');
+        const totalForms = document.getElementById('id_purchases-phonenumber-content_type-object_id-TOTAL_FORMS');
+        let formCount = parseInt(totalForms.value);
+    
+        addPhoneNumberButton.addEventListener('click', function() {
+            const newForm = document.createElement('div');
+            newForm.classList.add('card', 'mb-3', 'phone-number-form');
+            newForm.innerHTML = `
+                <div class="card-body">
+                    <input type="hidden" name="purchases-phonenumber-content_type-object_id-${formCount}-id" id="id_purchases-phonenumber-content_type-object_id-${formCount}-id">
+                    <input type="text" name="purchases-phonenumber-content_type-object_id-${formCount}-number" class="form-control mb-2" placeholder="أدخل رقم الهاتف" maxlength="15">
+                    <label class="form-check-label">
+                        <input type="checkbox" name="purchases-phonenumber-content_type-object_id-${formCount}-DELETE" class="form-check-input">
+                        حذف
+                    </label>
+                </div>
+            `;
+            phoneNumbersContainer.appendChild(newForm);
+            formCount++;
+            totalForms.value = formCount; // تحديث العدد الإجمالي للنماذج
+        });
+    });
+    </script>
+<style>
+.profile-image {
+    height: 15rem;
+    width: 15rem;
+    border-radius: 50%;
+    border: 0.2rem solid rgb(165, 160, 160); /* Simplified border property */
+    object-fit: cover; /* Ensures the image fits well within the circle */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15); /* Adds a soft shadow for depth */
+    overflow: hidden; /* Ensures no content spills outside the circular area */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effect */
+}
+
+.profile-image:hover {
+    transform: scale(1.05); /* Slight zoom on hover */
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.25); /* Enhanced shadow on hover */
+}
+
+</style>
+{% endblock %}
