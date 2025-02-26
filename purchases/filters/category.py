@@ -8,8 +8,8 @@ class CategoryFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(lookup_expr='icontains', label='الاسم')
     sell_price = django_filters.RangeFilter()
     total_items = django_filters.RangeFilter()
-    element=django_filters.ModelChoiceFilter(field_name="element",queryset=Element.objects.all())
-    sub_element = django_filters.ModelChoiceFilter(field_name="sub_element", queryset=SubElement.objects.all(), label='Sub Element')
+    element=django_filters.ModelChoiceFilter(field_name="element",queryset=Element.objects.all().order_by('name'))
+    sub_element = django_filters.ModelChoiceFilter(field_name="sub_element", queryset=SubElement.objects.all().order_by('name'))
     sub_element_quantity = django_filters.RangeFilter()
     
     class Meta:

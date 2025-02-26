@@ -47,7 +47,7 @@
                                 <label for="id_element" class="form-label">العنصر الرئيسي</label>
                                 <select id="id_element" name="element" class="form-select">
                                     <option value="">اختر العنصر الرئيسي</option>
-                                    {% for category in element_queryset %}
+                                    {% for category in filter.form.fields.element.queryset %}
                                     <option value="{{ category.id }}" {% if request.GET.element == category.id|stringformat:"s" %}selected{% endif %}>
                                         {{ category.name }}
                                     </option>
@@ -81,7 +81,7 @@
                                 <label for="id_sub_element" class="form-label">العنصر الفرعي</label>
                                 <select id="id_sub_element" name="sub_element" class="form-select">
                                     <option value="">اختر العنصر</option>
-                                    {% for category in sub_element_queryset %}
+                                    {% for category in filter.form.fields.sub_element.queryset %}
                                     <option value="{{ category.id }}" {% if request.GET.sub_element == category.id|stringformat:"s" %}selected{% endif %}>
                                         {{ category.name }}
                                     </option>

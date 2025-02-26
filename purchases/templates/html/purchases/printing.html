@@ -30,7 +30,7 @@
 
         .item h3 {
             font-size: 12px;
-            margin-bottom: 5px;
+            margin-bottom: 2px; /* تقليل المسافة السفلية */
             font-weight: bold;
             overflow: hidden;        /* منع النص من تجاوز الحاوية */
             text-overflow: ellipsis;  /* إضافة علامة الحذف إذا تجاوز النص */
@@ -39,7 +39,7 @@
 
         .barcode-container {
             width: 100%;
-            margin: 5px auto;
+            margin: 2px auto; /* تقليل المسافة بين النص والباركود */
             display: flex;
             justify-content: center; /* توسيط الباركود */
         }
@@ -47,7 +47,17 @@
         .barcode {
             width: 100%; /* اجعل عرض الباركود 100% من الحاوية */
             max-width: 140px; /* حد أقصى لعرض الباركود */
-            margin: 0 auto;
+        }
+        svg{
+            z-index: 1;
+        }
+
+        p {
+            margin-top: 0; /* تقليل المسافة العلوية */
+            padding-top: 0;
+            font-size: 10px; /* حجم النص أسفل الباركود */
+            line-height: 0.4; /* تقليل ارتفاع السطر */
+            z-index: 1000;
         }
 
         @media print {
@@ -75,10 +85,11 @@
     <div class="container">
         {% for item in items %}
             <div class="item">
-                <h3>{{ item.invoice_item.name }}</h3>
+                <h3>{{ item.name }}</h3> <!-- اسم العنصر -->
                 <div class="barcode-container">
                     <svg class="barcode" id="barcode{{ item.id }}"></svg>
                 </div>
+                <p>{{ item.invoice_item.category.name }}</p> <!-- عرض رقم العنصر -->
             </div>
         {% endfor %}
     </div>
@@ -86,13 +97,13 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             {% for item in items %}
-                JsBarcode("#barcode{{ item.id }}","#barcode{{ item.uuid_item }}",{
+                JsBarcode("#barcode{{ item.id }}", "{{ item.id }}", {
                     format: "CODE128",
                     lineColor: "#000",
-                    width: 1.5, /* تقليل عرض الخط */
-                    height: 40, /* تقليل الارتفاع */ 
-                    displayValue: true, // عرض قيمة الباركود أسفل الباركود
-                    fontSize: 10 /* تقليل حجم الخط */
+                    width: 1.5, /* عرض الخط */
+                    height: 40, /* ارتفاع الباركود */
+                    displayValue: false, /* إخفاء النص أسفل الباركود */
+                    fontSize: 10 /* حجم الخط في النص (إذا كان ظاهرًا) */
                 });
             {% endfor %}
 

@@ -28,8 +28,6 @@ class CategoryListView(FilterView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['sort'] = self.request.GET.get('sort', '') 
-        context['sub_element_queryset'] = SubElement.objects.all()
-        context["element_queryset"] = Element.objects.all()
 
         return context
     

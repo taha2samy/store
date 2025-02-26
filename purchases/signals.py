@@ -4,6 +4,12 @@ from .models import PurchaseInvoice, PurchaseInvoiceItem, Store, PhoneNumber, Su
 from django.core.exceptions import ValidationError
 from django.contrib.contenttypes.models import ContentType
 
+
+@receiver(post_save, sender=Store)
+def if_subelement_zero(sender, instance, created, **kwargs):
+    if instance.sub_element_quantity == 0:
+        instance.delete()
+
 @receiver(pre_delete, sender=Supplier)
 def delete_phone_numbers(sender, instance, **kwargs):
     content_type = ContentType.objects.get_for_model(Supplier)

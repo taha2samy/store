@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Invoice Form Card -->
+    <div class="card shadow-lg rounded">
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">{{ page_title }}</h4>
+        </div>
+
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                <!-- Invoice Details -->
+                <div class="mb-4">
+                    <h5 class="text-secondary mb-3">تفاصيل الفاتورة</h5>
+                    <div class="row">
+                        {{ form|crispy }}
+                    </div>
+                </div>
+
+                <!-- Items Details -->
+                <div>
+                    <h5 class="text-secondary mb-3">تفاصيل الأصناف</h5>
+                    <table class="table" id="items">
+                        <thead>
+                            <tr>
+                                <th>الصنف</th>
+                                <th>الكمية الفرعية</th>
+                                <th>اسعر الشراء</th>
+                                <th>رقمه فى المخزن</th>
+                                <th>الحذف</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for inline_form in inlines %}
+                                {% for form in inline_form %}
+                                    <tr>
+                                        {% for field in form %}
+                                            {% if field.is_hidden %}
+                                                <td style="display: none;">{{ field }}</td>
+                                            {% else %}
+                                                <td>
+                                                    <!-- Display the field with crispy form style -->
+                                                    {{ field|as_crispy_field }}
+                                                </td>
+                                            {% endif %}
+                                        
+                                        
+                                        <!-- Add custom logic for the last field if needed -->
+                                        {% if forloop.last %}
+                                            <script>
+                                              
+                                                document.getElementById(`id_sellsitems-${Number("{{ field.id_for_label }}".split("-")[1])}-sub_element_quantity`).addEventListener("change", function ()
+                                                
+                                                    {
+                                                const  n = Number("{{ field.id_for_label }}".split("-")[1]);
+                                                const total_sell_price = document.getElementById(`id_sellsitems-${n}-sell_price`);
+                                                const sell_price=document.getElementById(`id_sellsitems-${n}-category_sell_price`);
+                                                const subelement_def = document.getElementById(`id_sellsitems-${n}-category_sub_element_quantity`); 
+                                                const subelement_quantity = document.getElementById(`id_sellsitems-${n}-sub_element_quantity`); 
+                                                total_sell_price.value = (sell_price.value /subelement_def.value) * subelement_quantity.value;
+                                                }
+
+                                                );
+                                            </script>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                                {{ inline_form.management_form }}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                                    </div>
+
+                <!-- Submit Buttons -->
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="submit" class="btn btn-success me-2">
+                        <i class="bi bi-save"></i> حفظ
+                    </button>
+                    <a href="{{ success_url }}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> إلغاء
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

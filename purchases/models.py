@@ -84,6 +84,10 @@ class PurchaseInvoiceItem(models.Model):
         if self.category:
             return self.category.sub_element_quantity
         return None
+    def __str__(self):
+        # Customize this to include the category or other fields you need to show in the form
+        return f"{self.category.name if self.category else 'غير محدد'} - عدد {self.category.sub_element if self.category.sub_element else 'فرعي' } {self.category.sub_element_quantity} | سعر بيع الوحدة كاملة {self.purchase_price} "
+
 
 def uuid_item():
     
@@ -98,7 +102,6 @@ def uuid_item():
 class Store(models.Model):
     invoice_item = models.ForeignKey(PurchaseInvoiceItem,on_delete=models.CASCADE)
     sub_element_quantity = models.PositiveSmallIntegerField()
-    uuid_item=models.UUIDField(default=uuid_item)
 
 
     

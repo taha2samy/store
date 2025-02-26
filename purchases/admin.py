@@ -69,6 +69,6 @@ class PurchaseInvoiceItemAdmin(admin.ModelAdmin):
 # Customize the Store Admin
 @admin.register(Store)
 class StoreAdmin(admin.ModelAdmin):
-    list_display = ('invoice_item', 'sub_element_quantity',"uuid_item")
-    search_fields = ('invoice_item__category__name',)
-    list_filter = ('sub_element_quantity',)
+    list_display = ('id','invoice_item', 'sub_element_quantity')
+    search_fields = ('id','invoice_item__category__name',)
+    list_filter = ('id','sub_element_quantity',)

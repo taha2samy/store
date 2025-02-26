@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block title %}قائمة فواتير البيع{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% if messages %}
+    <div class="my-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <a hx-get="% url 'customer_create' %" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-primary mb-3">
+        <i class="fas fa-plus me-1"></i>
+        إضافة فاتورة بيع جديد
+    </a>
+
+    <h1 class="my-4">قائمة فواتير البيع</h1>
+
+    <!-- واجهة التصفية -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-filter me-1"></i>
+            تصفية الفواتير
+        </div>
+        <div class="card-body">
+            <form hx-get="{% url 'invoice_list' %}" hx-target="#content" hx-swap="innerHTML">
+                <div class="card p-4 shadow-sm">
+                    <h5 class="card-title">فلترة الفواتير</h5>
+                    <div class="col-md-12">
+                        <label for="id_id" class="form-label">رقم الفاتورة</label>
+                        <input type="text" id="id_id" name="id" class="form-control" placeholder="أدخل رقم الفاتورة" value="{{ request.GET.id }}">
+                    </div>
+                    <!-- صف الفلاتر -->
+                    <div class="row g-3">
+                        <!-- حقل فلترة التاريخ (من) -->
+                        <div class="col-md-6">
+                            <label for="id_date_after" class="form-label">من</label>
+                            <input type="date" id="id_date_after" name="date_after" class="form-control" value="{{ request.GET.date_after }}">
+                        </div>
+                        
+                        <!-- حقل فلترة التاريخ (إلى) -->
+                        <div class="col-md-6">
+                            <label for="id_date_before" class="form-label">إلى</label>
+                            <input type="date" id="id_date_before" name="date_before" class="form-control" value="{{ request.GET.date_before }}">
+                        </div>
+            
+                        <!-- حقل فلترة العميل -->
+                        <div class="col-md-12">
+                            <label for="id_customer" class="form-label">العميل</label>
+                            <select id="id_customer" name="customer" class="form-select">
+                                <option value="">اختر عميلاً</option>
+                                {% for customer in filter.form.fields.customer.queryset %}
+                                    <option value="{{ customer.id }}" 
+                                        {% if request.GET.customer == customer.id|stringformat:"s" %}
+                                            selected
+                                        {% endif %}>
+                                        {{ customer.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+            
+                        <!-- حقل فلترة الإجمالي (من) -->
+                        <div class="col-md-6">
+                            <label for="id_total_price_min" class="form-label">الإجمالي (من)</label>
+                            <input type="number" id="id_total_price_min" name="total_price_min" class="form-control" placeholder="من" value="{{ request.GET.total_price_min }}">
+                        </div>
+            
+                        <!-- حقل فلترة الإجمالي (إلى) -->
+                        <div class="col-md-6">
+                            <label for="id_total_price_max" class="form-label">الإجمالي (إلى)</label>
+                            <input type="number" id="id_total_price_max" name="total_price_max" class="form-control" placeholder="إلى" value="{{ request.GET.total_price_max }}">
+                        </div>
+                    </div>
+            
+                    <!-- أزرار التطبيق وإعادة التعيين -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="submit" class="btn btn-primary">تطبيق الفلاتر</button>
+                        <a hx-get="{% url 'invoice_list' %}" hx-target="#content" hx-push-url="true" hx-swap="innerHTML" class="btn btn-secondary">إعادة تعيين</a>
+                    </div>
+                </div>
+            </form>
+                        
+        </div>
+    </div>
+
+    <!-- جدول الفواتير -->
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>        
+                     <a hx-get="?sort={% if request.GET.sort == 'id' %}-id{% else %}id{% endif %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
+                    رقم الفاتورة {% if request.GET.sort == 'id' %}↑{% elif request.GET.sort == '-id' %}↓{% endif %}
+                </a> 
+            </th>
+                <th>
+                    <a hx-get="?sort={% if request.GET.sort == 'date' %}-date{% else %}date{% endif %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
+                        التاريخ {% if request.GET.sort == 'date' %}↑{% elif request.GET.sort == '-date' %}↓{% endif %}
+                    </a>
+                </th>
+                <th>    <a hx-get="?sort={% if request.GET.sort == 'customer' %}-customer{% else %}customer{% endif %}" hx-push-url="true"  hx-target="#content" hx-swap="innerHTML">
+                    العميل {% if request.GET.sort == 'customer' %}↑{% elif request.GET.sort == '-customer' %}↓{% endif %}
+                </a></th>
+                <th>
+                    <a hx-get="?sort={% if request.GET.sort == 'total_price' %}-total_price{% else %}total_price{% endif %}" hx-push-url="true"  hx-target="#content" hx-swap="innerHTML">
+                        الإجمالي {% if request.GET.sort == 'total_price' %}↑{% elif request.GET.sort == '-total_price' %}↓{% endif %}
+                    </a>
+                </th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for invoice in invoices %}
+            <tr>
+                <td>{{invoice.id}}</td>
+                <td>{{ invoice.date }}</td>
+                <td>{{ invoice.customer.name }}</td>
+                <td>{{ invoice.total_price }}</td>
+                <td>
+                    <a hx-get="% url 'sales_invoice_detail' invoice.id %" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-info">
+                        <i class="fas fa-eye me-1"></i>
+                        تفاصيل
+                    </a>
+                    <a hx-get="{% url 'invoice_update' invoice.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-warning">
+                        <i class="fas fa-edit me-1"></i>
+                        تعديل
+                    </a>
+                    <a hx-get="% url 'category_delete' category.id %" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-danger">
+                        <i class="fas fa-trash me-1"></i>
+                        حذف
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- الترقيم (Pagination) -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" hx-get="?page={{ page_obj.previous_page_number }}" hx-target="#content" hx-swap="innerHTML" aria-label="السابق">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                <a class="page-link" hx-get="?page={{ num }}" hx-target="#content" hx-swap="innerHTML">{{ num }}</a>
+            </li>
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" hx-get="?page={{ page_obj.next_page_number }}" hx-target="#content" hx-swap="innerHTML" aria-label="التالي">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

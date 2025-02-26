@@ -29,7 +29,6 @@ class SupplierListView(FilterView):
         return queryset
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        sort = self.request.GET.get('sort')
         return context
     
 

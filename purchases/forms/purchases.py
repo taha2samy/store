@@ -94,7 +94,7 @@ class PurchaseInvoiceItemForm(forms.ModelForm):
         if category and sub_element_quantity is not None:
             if category.sub_element_quantity < sub_element_quantity:
                 raise forms.ValidationError(
-                    f'كده انت بتهزر اساس اعلى حاجة {category.sub_element_quantity}'
+                    f'هذا اعلى من ما هو مسجل لصنف وهو  {category.sub_element_quantity}'
                 )
             if sub_element_quantity < 0:
                 raise forms.ValidationError('الكمية الفرعية يجب أن تكون قيمة موجبة.')
@@ -114,4 +114,4 @@ class PurchaseInvoiceItemForm(forms.ModelForm):
             field.help_text = False
         if self.instance and self.instance.category:
             self.fields['category_sub_element_quantity'].initial = self.instance.category_sub_element_quantity
-
+            self.fields

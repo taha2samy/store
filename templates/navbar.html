@@ -62,8 +62,8 @@
                         <i class="fas fa-shopping-cart me-1"></i> المبيعات
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="salesDropdown">
-                        <li><a class="dropdown-item" hx-get="% url 'sales_invoice_list' %" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
-                            <i class="fas fa-file-invoice-dollar me-1"></i> فواتير المبيعات
+                        <li><a class="dropdown-item" hx-get="{% url 'invoice_list' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
+                            <i class="fas fa-file-invoice-dollar me-1"></i> فواتير المبيعات111111111
                         </a></li>
                         <li><a class="dropdown-item" hx-get="{% url 'customer_list' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML">
                             <i class="fas fa-users me-1"></i> العملاء
