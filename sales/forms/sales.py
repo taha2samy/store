@@ -4,7 +4,6 @@ from django import forms
 from django.core.exceptions import ValidationError
 from sales.models import PurchaseInvoiceItem
 from purchases.models import Store
-# Form for SellsInvoice
 class SellsInvoiceForm(forms.ModelForm):
     class Meta:
         model = SellsInvoice
@@ -12,8 +11,11 @@ class SellsInvoiceForm(forms.ModelForm):
         widgets = {
             'customer': forms.Select(attrs={'class': 'form-control', 'placeholder': 'اختر العميل'}),
         }
+        labels = {
+            'customer': 'العميل',
+        }
 
-# Form for SellsItems
+
 
 class SellsItemsForm(forms.ModelForm):
     category_sub_element_quantity = forms.CharField(
@@ -52,6 +54,7 @@ class SellsItemsForm(forms.ModelForm):
             'store_item_n': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'أدخل رقم المنتج المخزني',
+                "readonly": "readonly"
             }),
             'sell_price': forms.NumberInput(attrs={
                 'class': 'form-control',
@@ -75,7 +78,7 @@ class SellsItemsForm(forms.ModelForm):
                 store = Store.objects.get(id=store_item_n)
                 print(store.sub_element_quantity)
                 if store.sub_element_quantity >= abs(quantity_difference):
-                   pass
+                    pass
                 else:
                     self.add_error("sub_element_quantity","لا توجد كمية كافية في المخزن.")
             except Store.DoesNotExist:
@@ -85,12 +88,7 @@ class SellsItemsForm(forms.ModelForm):
         return super().clean()
     
 
-    def clean_sub_element_quantity(self, *args, **kwargs):
-        """
-        Ensure the sub_element_quantity is greater than zero.
-        """
-        new_quantity = self.cleaned_data.get('sub_element_quantity')
-        return new_quantity
+
 
     def clean_sell_price(self):
         """
@@ -116,4 +114,5 @@ class SellsItemsForm(forms.ModelForm):
             if category:
                 self.fields["category_sub_element_quantity"].initial = category.sub_element_quantity
                 self.fields["category_sell_price"].initial = category.sell_price
+ 
  
