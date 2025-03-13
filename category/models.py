@@ -8,12 +8,26 @@ class SubElement(models.Model):
     detail = models.TextField(null=True,blank=True)
     def __str__(self):
         return str(self.name)
+    class Meta:
+        permissions = [
+            ("can_view_element_added", "Can view element what he added"),
+            ("can_change_element_added", "Can change element what he added"),
+            ("can_delete_element_added", "Can delete element what he added"),
+        ]
 
 class Element(models.Model):
     name = models.CharField(max_length=100)
     detail = models.TextField(null=True,blank=True)
     def __str__(self):
         return str(self.name)
+    class Meta:
+        permissions = [
+            ("can_view_element_added", "Can view element what he added"),
+            ("can_change_element_added", "Can change element what he added"),
+            ("can_delete_element_added", "Can delete element what he added"),
+        ]
+
+  
 class Category(models.Model):
     name = models.CharField(max_length=100)
     element=models.ForeignKey(Element,on_delete=models.SET_NULL,null=True,blank=True)

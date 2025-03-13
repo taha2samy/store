@@ -2,9 +2,7 @@
 {% block title %}تسجيل الدخول{% endblock %}
 
 {% if user.is_authenticated %}
-    <script>
-        window.location.href = "{% url 'profile_detail' %}";
-    </script>
+
 
 {% else %}
 <div class="container d-flex justify-content-center align-items-center vh-100">

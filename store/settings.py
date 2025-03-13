@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-0yruv&$@$f#*9$=vf@h+nzp$hf#pw(=5%nzu#t$b!l3srn9jg%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 import sys
 import os
 
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'guardian',
 
     # Third-party apps
     'crispy_forms',
@@ -66,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'store.urls'
@@ -141,9 +143,14 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login'  
-LOGIN_REDIRECT_URL = 'profile_detail'  
-LOGOUT_REDIRECT_URL = 'login'
+LOGIN_REDIRECT_URL = '/'  
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # Django's default backend
+    'guardian.backends.ObjectPermissionBackend',  # Guardian backend
+)
+ANONYMOUS_USER_NAME = 'anonymous'

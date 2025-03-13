@@ -12,6 +12,9 @@ from django.views.generic.detail import DetailView
 from purchases.models import PhoneNumber
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse_lazy
+from django.contrib.auth.views import LoginView
+from django.shortcuts import redirect
+
 
 class HomeView(TemplateView):
     template_name="home.html"
@@ -44,3 +47,22 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateWithInlinesView):
         return self.model.objects.get(user_id=self.request.user.id)
 
 
+class LoginView(LoginView):
+    template_name = 'registration/login.html'
+
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse('home')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            next_url = request.GET.get('next')
+            if next_url:
+                return redirect(next_url)
+            return redirect('home')
+        return super().dispatch(request, *args, **kwargs)
+
+
+    

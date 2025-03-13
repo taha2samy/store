@@ -10,6 +10,7 @@ django-crispy-forms = "*"
 crispy-bootstrap4 = "*"
 crispy-bootstrap5 = "*"
 pillow = "*"
+django-guardian = "*"
 
 [dev-packages]
 
