@@ -20,7 +20,7 @@ class ElementListView(PermissionListMixin,LoginRequiredMixin, ListView):
     def get_queryset(self):
         elements = super().get_queryset()
         query = self.request.GET.get('q')
-        if query:
+        if query and elements.exists():
             return elements.filter(
                 Q(name__icontains=query) | Q(detail__icontains=query)
             ).order_by('id')
@@ -45,7 +45,7 @@ class ElementUpdateView(PermissionRequiredMixin,SuccessMessageMixin, LoginRequir
     permission_required = 'category.change_element'
     login_url = reverse_lazy('permission_denied', kwargs={"exception": "غير مصرح لك بالتعديل على هذا العنصر"})
     success_message = "تم تعديل العنصر بنجاح "
-    
+    accept_global_perms=True
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -73,6 +73,7 @@ class ElementCreateView(PermissionRequiredMixin,SuccessMessageMixin, LoginRequir
             assign_perm('category.change_element', self.request.user, self.object)
         if self.request.user.has_perm('category.can_delete_element_added'):
             assign_perm('category.delete_element', self.request.user, self.object)
+        
         return response
     def get_permission_object(self):
         return None
@@ -87,6 +88,7 @@ class ElementDeleteView(PermissionRequiredMixin,SuccessMessageMixin, LoginRequir
     permission_required = 'category.delete_element'
     login_url=reverse_lazy('permission_denied',kwargs={"exception":"غير مصرح لك بمسح هذا العنصر"})
     success_message="تم حذف العنصر بنجاح"
+    accept_global_perms=True
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -107,15 +109,14 @@ class SubElementListView(PermissionListMixin,LoginRequiredMixin, ListView):
     def get_queryset(self):
         elements = super().get_queryset()
         query = self.request.GET.get('q')
-        print(elements)  
-        if query:
-            return elements.objects.filter(
+        if query and elements.exists():
+            return elements.filter(
                 Q(name__icontains=query) | Q(detail__icontains=query)
             )
         return elements.order_by('id')
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["name"] = Element._meta.db_table
+        context["name"] = SubElement._meta.db_table
         return context
 
 class SubElementUpdateView(PermissionRequiredMixin,SuccessMessageMixin,UpdateView,LoginRequiredMixin):
@@ -126,6 +127,7 @@ class SubElementUpdateView(PermissionRequiredMixin,SuccessMessageMixin,UpdateVie
     permission_required = 'category.change_subelement'
     login_url=reverse_lazy('permission_denied',kwargs={"exception":"غير مصرح بالتعديل على هذا العنصر"})
     success_message = "تم تعديل العنصر بنجاح "
+    accept_global_perms=True
     
     
     
@@ -139,6 +141,7 @@ class SubElementCreateView(PermissionRequiredMixin, SuccessMessageMixin,CreateVi
     permission_required = 'category.add_subelement'
     accept_global_perms=True
     login_url=reverse_lazy('permission_denied',kwargs={"exception":"غير مصرح لك بانشاء عنصر جديد "})
+    
     success_message= "تم انشاء العنصر بنجاح "
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -161,6 +164,7 @@ class SubElementDeleteView(PermissionRequiredMixin, SuccessMessageMixin,DeleteVi
     permission_required = 'category.delete_subelement'
     login_url=reverse_lazy('permission_denied',kwargs={"exception":"غير مصرح لك بمسح هذا العنصر"})
     success_message="تم حذف العنصر بنجاح"
+    accept_global_perms=True
 
     
     

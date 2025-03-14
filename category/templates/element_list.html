@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}قائمة العناصر {% endblock %}
-
+{% load guardian_tags %}
 {% block content %}
 <div class="container mt-4">
     {% if messages %}
@@ -19,15 +19,18 @@
         {% if name == 'category_element' %}
         <h1 class="text-center mb-0">  قائمة العناصر الرئيسية </h1>
         
-
+        {% if perms.category.add_element %}
         <a href="{% url 'main_element_create' %}" class="btn btn-success">
             <i class="fas fa-plus"></i> إضافة عنصر جديد
         </a>
+        {% endif %}
         {% else %}
+        {% if perms.category.add_subelement %}
         <h1 class="text-center mb-0">قائمة العناصر الفرعية</h1>
         <a href="{% url 'sub_element_create' %}" class="btn btn-success">
             <i class="fas fa-plus"></i> إضافة عنصر جديد
         </a>
+        {%endif%}
         {% endif %}
     </div>
 
@@ -56,20 +59,36 @@
                 <td>{{ element.name }}</td>
                 <td>{{ element.detail|truncatechars:50 }}</td>
                 <td>
+                    {% get_obj_perms request.user for element as "obj_perms" %}
                     {% if name == 'category_element'%}
+
+
+                   
+                    {% if "change_element" in obj_perms or perms.category_change_element%}
                     <a href="{% url 'main_element_update' element.pk %}" class="btn btn-sm btn-warning">
                         <i class="fas fa-edit"></i> تعديل
                     </a>
+                    {% endif %}
+                    {% if "delete_element" in obj_perms or perms.category.delete_element  %}
+
                     <a href="{% url 'main_element_delete' element.pk %}" class="btn btn-sm btn-danger">
                         <i class="fas fa-trash"></i> حذف
                     </a>
-                    {% else %}
+                    {% endif %}
+
+                    {% else %}  
+                    {% if "change_subelement" in obj_perms or perms.category.change_subelement %}
+
                     <a href="{% url 'sub_element_update' element.pk %}" class="btn btn-sm btn-warning">
                         <i class="fas fa-edit"></i> تعديل
                     </a>
+                    {% endif %}
+                    {% if "delete_subelement" in obj_perms or perms.category.delete_subelement %}
+
                     <a href="{% url 'sub_element_delete' element.pk %}" class="btn btn-sm btn-danger">
                         <i class="fas fa-trash"></i> حذف
                     </a>
+                    {% endif %}
                     {% endif %}
                 </td>
             </tr>

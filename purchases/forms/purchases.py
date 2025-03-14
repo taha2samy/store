@@ -3,6 +3,8 @@ from django import forms
 
 
 from django import forms
+from purchases.models import Store
+
 
 
 class PurchaseInvoiceForm(forms.ModelForm):
@@ -90,7 +92,6 @@ class PurchaseInvoiceItemForm(forms.ModelForm):
     def clean_sub_element_quantity(self):
         sub_element_quantity = self.cleaned_data.get('sub_element_quantity')
         category = self.cleaned_data.get('category')  # Access category field from cleaned_data
-
         if category and sub_element_quantity is not None:
             if category.sub_element_quantity < sub_element_quantity:
                 raise forms.ValidationError(
@@ -105,6 +106,8 @@ class PurchaseInvoiceItemForm(forms.ModelForm):
         quantity = self.cleaned_data.get('quantity')
         if quantity is None or quantity <= 0:
             raise forms.ValidationError('الكمية يجب أن تكون قيمة موجبة أكبر من صفر.')
+            
+            
         return quantity
 
     def __init__(self, *args, **kwargs):

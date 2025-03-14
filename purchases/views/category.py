@@ -67,6 +67,7 @@ class CategoryUpdateView(PermissionRequiredMixin,LoginRequiredMixin,SuccessMessa
     success_url = reverse_lazy('category_list') 
     login_url=reverse_lazy('permission_denied',kwargs={"exception":"ليس لديك صلاحيات كافية لتعديل على هذا العنصر"})
     permission_required="category.change_category"
+    accept_global_perms=True
     def get_success_message (self,cleaned_data):
         return f"تم تعديل الصنف {self.object.name} برقم {self.object.id} وسعره {self.object.sell_price} بنجاح!"
 
@@ -76,6 +77,6 @@ class CategoryDeleteView(SuccessMessageMixin,LoginRequiredMixin,PermissionRequir
     success_url = reverse_lazy('category_list')
     permission_required = "category.delete_category"
     login_url = reverse_lazy('permission_denied', kwargs={'exception': 'ليس لديك صلاحيات لحذف هذا الصنف'})
-
+    accept_global_perms=True
     def get_success_message (self,cleaned_data):
         return f"تم حذف الصنف {self.object.name} برقم {self.object.id} وسعره {self.object.sell_price} بنجاح!"

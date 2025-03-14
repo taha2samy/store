@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}قائمة الموردين{% endblock %}
-
+{% load guardian_tags %}
 {% block content %}
 <div class="container">
     {% if messages %}
@@ -16,13 +16,14 @@
     {% endif %}
 
     <h1 class="my-4">قائمة الموردين</h1>
-    
+    {% if perms.purchases.add_supplier %}
+
     <!-- زر إضافة مورد جديد -->
     <a hx-get="{% url 'supplier_create' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-primary mb-3">
         <i class="fas fa-plus me-1"></i>
         إضافة مورد جديد
     </a>
-
+    {% endif %}
     <!-- حقل البحث -->
 
  <!-- واجهة التصفية -->
@@ -76,18 +77,26 @@
                 <td>{{ supplier.name }}</td>
                 <td>{{ supplier.contact_info }}</td>
                 <td>
+                    {% get_obj_perms request.user for supplier as "obj_perms" %}
+                    
+                    {% if 'change_supplier' in obj_perms  or perms.purchases.change_supplier %}
                     <a hx-get="{% url 'supplier_update' supplier.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-warning">
                         <i class="fas fa-edit me-1"></i>
                         تعديل
                     </a>
+                    {% endif %}
+                    {% if "delete_supplier" in obj_perms or perms.purchases.delete_supplier %}
                     <a hx-get="{% url 'supplier_delete' supplier.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-danger">
                         <i class="fas fa-trash me-1"></i>
                         حذف
                     </a>
+                    {% endif %}
+                    {% if "can_view_supplier_all_detail" in obj_perms or perms.purchases.can_view_supplier_all_detail %}
                     <a hx-get="{% url 'supplier_detail' supplier.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-info">
                         <i class="fas fa-eye me-1"></i>
                         رؤية التفصيل
                     </a>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}

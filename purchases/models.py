@@ -29,12 +29,19 @@ class PhoneNumber(models.Model):
     
 class Supplier(models.Model):
     name = models.CharField(max_length=100)
-    
     contact_info = models.TextField( blank=True, null=True)
     
     def __str__(self):
         return self.name
-    
+    class Meta:
+        permissions=[
+            ("can_view_supplier_added","Can view supplier what he added"),
+            ("can_change_supplier_added","Can change supplier what he added"),
+            ("can_delete_supplier_added","Can delete supplier what he added"),
+            ("can_view_supplier_all_detail","Can view supplier all detail"),
+            ("can_view_supplier_all_detail_add","Can view supplier all detail he add")
+
+        ]
 
 class PurchaseInvoice(models.Model):
     

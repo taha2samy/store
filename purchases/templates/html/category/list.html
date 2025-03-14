@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}قائمة الفئات{% endblock %}
+{% load guardian_tags %}
 
 {% block content %}
 
@@ -19,10 +20,12 @@
     <h1 class="my-4">قائمة الفئات</h1>
 
     <!-- زر إضافة فئة جديدة -->
+    {% if perms.category.add_category %}
     <a hx-get="{% url 'category_create' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-primary mb-3">
         <i class="fas fa-plus me-1"></i>
         إضافة فئة جديدة
     </a>
+    {% endif %}
 
 
 
@@ -151,14 +154,19 @@
                 <td>{{ category.sub_element }}</td>
 
                 <td>
+                    {% get_obj_perms request.user for category as "obj_perms" %}
+                    {% if "change_category" in obj_perms or perms.category.change_category%}
                     <a hx-get="{% url 'category_update' category.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-warning">
                         <i class="fas fa-edit me-1"></i>
                         تعديل
                     </a>
+                    {% endif %}
+                    {% if "delete_category" in obj_perms or perms.category.delete_category%}
                     <a hx-get="{% url 'category_delete' category.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-danger">
                         <i class="fas fa-trash me-1"></i>
                         حذف
                     </a>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}

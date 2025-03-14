@@ -28,6 +28,9 @@ def post_save_purchase_invoice_item(sender, instance, created, **kwargs):
 def pre_save_purchase_invoice_item(sender, instance, **kwargs):
     if instance.pk:
         previous_instance = PurchaseInvoiceItem.objects.get(pk=instance.pk)
+        
+        
+
         if instance.quantity == previous_instance.quantity:
             pass
         elif instance.quantity > previous_instance.quantity:
@@ -38,6 +41,8 @@ def pre_save_purchase_invoice_item(sender, instance, **kwargs):
             ]
             Store.objects.bulk_create(stores)
         elif instance.quantity < previous_instance.quantity:
+            if not all(store.sub_element_quantity == previous_instance.sub_element_quantity for store in Store.objects.filter(invoice_item=instance)):
+                raise IndexError("you must go advanced editing the purchase has been modified")
             remove_count = previous_instance.quantity - instance.quantity
             stores_to_remove = Store.objects.filter(invoice_item=instance)[:remove_count]
             if stores_to_remove.count() < remove_count:
@@ -50,7 +55,9 @@ def pre_save_purchase_invoice_item(sender, instance, **kwargs):
 @receiver(pre_delete, sender=PurchaseInvoiceItem)
 def pre_delete_purchase_invoice_item(sender, instance, **kwargs):
     stores_to_remove = Store.objects.filter(invoice_item=instance)
-    if stores_to_remove.count() < instance.quantity:
+    if not all(store.sub_element_quantity == instance.sub_element_quantity for store in Store.objects.filter(invoice_item=instance)):
+            raise IndexError("you must go advanced editing the purchase has been modified")
+    if stores_to_remove.count() != instance.quantity:
         raise ValidationError("Cannot delete PurchaseInvoiceItem because there are not enough related Store elements.")
     # Convert the queryset to a list and delete each item individually
     stores_to_remove_list = list(stores_to_remove)
