@@ -1,10 +1,10 @@
+{% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% block title %}تسجيل الدخول{% endblock %}
 
-{% if user.is_authenticated %}
 
+{% block content %}
 
-{% else %}
 <div class="container d-flex justify-content-center align-items-center vh-100">
     <div class="card shadow-lg p-4 w-100" style="max-width: 400px; border-radius: 15px;">
         <div class="text-center">
@@ -25,4 +25,4 @@
         </div>
     </div>
 </div>
-{% endif %}
+{% endblock %}

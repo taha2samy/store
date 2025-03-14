@@ -12,16 +12,20 @@ from django.views.generic.detail import DetailView
 from purchases.models import PhoneNumber
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse_lazy
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView,LogoutView
 from django.shortcuts import redirect
 
 
 class HomeView(TemplateView):
     template_name="home.html"
+    
+class LogoutView(LogoutView):
+    next_page = reverse_lazy('login')
 
 
-class logut_reset(LoginRequiredMixin,TemplateView):
-    template_name="registration/logout_reset.html"
+class MyLogoutView(LoginRequiredMixin, TemplateView):
+    template_name = "registration/logout_reset.html"
+
 
 class ProfileDetailView(LoginRequiredMixin,TemplateView):
     model = Profile

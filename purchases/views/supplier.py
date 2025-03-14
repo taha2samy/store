@@ -29,6 +29,9 @@ class SupplierListView(PermissionListMixin,LoginRequiredMixin,FilterView):
         sort = self.request.GET.get('sort',None)
         if sort and queryset.exists():
            queryset= queryset.order_by(sort)
+        elif queryset.exists():
+            queryset= queryset.order_by("name")
+            
         return queryset
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
