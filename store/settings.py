@@ -150,7 +150,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',  # Django's default backend
-    'guardian.backends.ObjectPermissionBackend',  # Guardian backend
+    'django.contrib.auth.backends.ModelBackend',  
+    'guardian.backends.ObjectPermissionBackend',  
 )
 ANONYMOUS_USER_NAME = 'anonymous'

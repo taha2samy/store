@@ -1,4 +1,5 @@
 from django.contrib import admin
+from guardian.admin import GuardedModelAdmin
 from .models import (
     Category, 
     Supplier, 
@@ -24,7 +25,7 @@ class SubElementAdmin(admin.ModelAdmin):
 
 # Customize the Category Admin
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(GuardedModelAdmin):
     list_display = ('name', 'sell_price', 'sub_element', 'sub_element_quantity', 'total_items')
     search_fields = ('name', 'sub_element__name')
     list_filter = ('sell_price', 'sub_element')

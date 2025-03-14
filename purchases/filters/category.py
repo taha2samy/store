@@ -18,5 +18,3 @@ class CategoryFilter(django_filters.FilterSet):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
- 

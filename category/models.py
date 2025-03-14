@@ -42,3 +42,9 @@ class Category(models.Model):
         pass
     def __str__(self):
         return self.name
+    class Meta:
+        permissions = [
+            ("can_view_category_added", "Can view category what he added"),
+            ("can_change_category_added", "Can change category what he added"),
+            ("can_delete_category_added", "Can delete category what he added"),
+        ]

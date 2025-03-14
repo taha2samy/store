@@ -5,12 +5,7 @@ from django.urls import reverse_lazy
 from django.db.models import Q
 from .models import Element,SubElement
 from .forms import ElementForm,SubElementForm
-from guardian.shortcuts import get_objects_for_user
-from django.contrib import messages
-from django.contrib.auth.decorators import permission_required
-from django.core.exceptions import PermissionDenied
 from guardian.mixins import PermissionRequiredMixin, PermissionListMixin, LoginRequiredMixin
-from django.http import HttpResponse
 from django.shortcuts import redirect
 from guardian.shortcuts import assign_perm
 from django.contrib.messages.views import SuccessMessageMixin
