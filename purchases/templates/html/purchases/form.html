@@ -2,6 +2,8 @@
 {% load crispy_forms_tags %}
 {% load static %}
 {% block content %}
+<script src="{% static 'js/pruchases.js' %}"></script>
+
 <style>
 .hidden {
     opacity: 0;
@@ -22,7 +24,11 @@
         </div>
         <div class="card-body">
           <div class="row">
+            <div class="col-md-6" id="go_hell"> 
+                {% include 'html/purchases/a7a.html' %}
+                <button class="btn btn-primary btn-md" onclick="addTableRow(event)">أضف عنصر الى الفاتورة </button>
 
+            </div>
             <div class="col-md-6">
               {{ form |crispy}}
             </div>
@@ -215,9 +221,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     <!-- Submit and Cancel Buttons -->
      {% if form.instance.pk %}
-    <button type="submit" class="btn btn-primary">تحديث</button>
+    <button type="submit" hx-post="{% url 'purchase_update' form.instance.pk %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-primary" onclick="send()">تحديث</button>
     {% else %}
-    <button type="submit" hx-post="{% url 'purchase_create'%}" hx-target="#content" hx-swap="innerHTML" class="btn btn-info" >انشاء</button>
+    <button type="submit" hx-post="{% url 'purchase_create'%}" hx-target="#content" hx-swap="innerHTML" class="btn btn-info" onclick="send()">انشاء</button>
 
     {% endif %}
     
@@ -230,5 +236,15 @@ document.addEventListener('DOMContentLoaded', function () {
     <a hx-get="{% url 'purchase_list' %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-secondary">إلغاء</a>
   </form>
 </div>
+<h1>ddd</h1>
+<script>
+const numberInputs = document.querySelectorAll('table input[type="number"]:not([readonly]):not([disabled])');
 
+// إضافة event listener لجميع المدخلات
+numberInputs.forEach(input => {
+    input.addEventListener('change', all_total_price);
+});
+
+
+</script>
 {% endblock %}

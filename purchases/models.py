@@ -48,12 +48,10 @@ class PurchaseInvoice(models.Model):
     invoice_number = models.CharField(max_length=50,default=gen_uuid, unique=True)
     supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, blank=True)
     purchase_date = models.DateTimeField(auto_now_add=True)
-    
     @property
     def total_amount(self):
         return sum(item.total_price for item in self.items.all())
 
-        pass
     @total_amount.setter
     def total_amount(self, value):
         pass

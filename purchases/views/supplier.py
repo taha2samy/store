@@ -8,7 +8,6 @@ from purchases.forms.supplier import PhoneNumberForm,SupplierForm
 from purchases.models import PhoneNumber,Supplier
 from purchases.models import Supplier, PhoneNumber
 from django.views.generic import DeleteView,DetailView
-
 from django.contrib.contenttypes.models import ContentType
 from guardian.mixins import PermissionListMixin,PermissionRequiredMixin,LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -86,7 +85,7 @@ class SupplierUpdateView(PermissionRequiredMixin,SuccessMessageMixin,LoginRequir
     success_message = "تم تعديل المورد بنجاح"
     accept_global_perms=True
 
-class SupplierDeleteView(PermissionRequiredMixin,LoginRequiredMixin,DetailView):
+class SupplierDeleteView(PermissionRequiredMixin,LoginRequiredMixin,DeleteView):
     model = Supplier
     template_name = 'html/supplier/delete.html'
     success_url = reverse_lazy('supplier_list')
