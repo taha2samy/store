@@ -12,13 +12,17 @@ from purchases.models import PurchaseInvoice, PurchaseInvoiceItem
 from django.db.models import Sum
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from guardian.mixins import PermissionRequiredMixin,PermissionListMixin,LoginRequiredMixin
+from guardian.shortcuts import assign_perm
 
 
-
-class PurchaseInvoicePrintingView(DetailView):
+class PurchaseInvoicePrintingView(PermissionRequiredMixin,LoginRequiredMixin,SuccessMessageMixin,DetailView):
     model = PurchaseInvoice
     template_name = 'html/purchases/printing.html'  
-    context_object_name = 'invoice'  
+    context_object_name = 'invoice'
+    login_url=reverse_lazy("permission_denied",kwargs={"exception":"غير مصرج لك بطباعة الفاتورة "})  
+    accept_global_perms=True
+    permission_required="purchases.can_print_purchaseinvoice_print"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -29,10 +33,13 @@ class PurchaseInvoicePrintingView(DetailView):
 
         return context
     
-class PurchaseInvoiceDetailView(DetailView):
+class PurchaseInvoiceDetailView(PermissionRequiredMixin,LoginRequiredMixin,SuccessMessageMixin,DetailView):
     model = PurchaseInvoice
     template_name = 'html/purchases/detail.html'  
     context_object_name = 'invoice'  
+    permission_required="purchases.can_view_purchaseinvoice_all_detail"
+    accept_global_perms=True
+    login_url=reverse_lazy("permission_denied",kwargs={"exception":"غير مصرح لك بالوصول على بيانات الفاتورة"})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -44,12 +51,15 @@ class PurchaseInvoiceDetailView(DetailView):
 
         return context
 
-class PurchaseInvoiceDeleteView(SuccessMessageMixin,DeleteView):
+class PurchaseInvoiceDeleteView(PermissionRequiredMixin,LoginRequiredMixin,SuccessMessageMixin,DeleteView):
     model = PurchaseInvoice
     template_name = 'html/purchases/delete.html'  
     context_object_name = 'invoice'  
     success_url = reverse_lazy('purchase_list')  
-
+    permission_required="purchases.delete_purchaseinvoice"
+    accept_global_perms=True
+    login_url=reverse_lazy("permission_denied",kwargs={"exception":"غير مصرح لك في حذف الفاتورة"})
+     
 
 
     def get_context_data(self, **kwargs):
@@ -63,11 +73,12 @@ class PurchaseInvoiceDeleteView(SuccessMessageMixin,DeleteView):
     def get_success_message(self,cleaned_data):
         return f"تم حذف الفاتورة بنجاح {self.object.invoice_number}"
 
-class PurchaseInvoiceListView(FilterView):
+class PurchaseInvoiceListView(LoginRequiredMixin, PermissionListMixin, FilterView):
     model = PurchaseInvoice
     template_name = 'html/purchases/list.html'
     paginate_by = 10
     filterset_class = PurchaseInvoiceFilter
+    permission_required="purchases.view_purchaseinvoice"
     def get_queryset(self, **kwargs):
         queryset = super().get_queryset()
         queryset = queryset.annotate(
@@ -80,12 +91,12 @@ class PurchaseInvoiceListView(FilterView):
                 )
             )
         )
-        queryset=queryset.order_by('purchase_date')
         sort = self.request.GET.get('sort')
         if sort:
              queryset = queryset.order_by(sort)
-        for i in queryset:
-            print(i.total_amount)
+        else:
+            queryset = queryset.order_by('-purchase_date')
+
         return queryset
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -101,12 +112,15 @@ class InvoiceItem(InlineFormSetFactory):
     form_class = PurchaseInvoiceItemForm
 
 
-class PurchaseInvoiceUpdateView(SuccessMessageMixin,UpdateWithInlinesView):
+class PurchaseInvoiceUpdateView(PermissionRequiredMixin,LoginRequiredMixin,SuccessMessageMixin,UpdateWithInlinesView):
     model = PurchaseInvoice
     form_class = PurchaseInvoiceForm
     inlines = [InvoiceItem]
     template_name = 'html/purchases/form.html'
     success_url = reverse_lazy('purchase_list') 
+    permission_required="purchases.change_purchaseinvoice"
+    accept_global_perms=True
+    login_url=reverse_lazy('permission_denied',kwargs={"exception":"غير مصرح لك بتعديل على فاتورة الشراء"})
     def get_success_message(self, cleaned_data):
         return f"تم تعديل الفاتور بنجاح رقم {self.object.invoice_number}"
     def get_context_data(self, **kwargs):
@@ -115,17 +129,36 @@ class PurchaseInvoiceUpdateView(SuccessMessageMixin,UpdateWithInlinesView):
         context["total_price"]=sum(item.total_price for item in item)
         return context
 
-class PurchaseInvoiceCreateView(SuccessMessageMixin,CreateWithInlinesView):
+class PurchaseInvoiceCreateView(PermissionRequiredMixin,LoginRequiredMixin,SuccessMessageMixin,CreateWithInlinesView):
     model = PurchaseInvoice
     form_class = PurchaseInvoiceForm
     inlines = [InvoiceItem]
     template_name = 'html/purchases/form.html'
     factory_kwargs = {'extra': 1, 'max_num': None,
                       'can_order': False, 'can_delete': False}
-
+    permission_required="purchases.add_purchaseinvoice"
+    accept_global_perms=True
+    login_url=reverse_lazy('permission_denied',kwargs={"exception":"غير مصرح لك في إضافة فاتورة الشراء"})
     success_url = reverse_lazy('purchase_list')
+    def get_permission_object(self):
+        return None
     def get_success_message(self, cleaned_data):
         return f"تم انشاء الفاتورة  بنجاح رقم {self.object.invoice_number}"
+    def form_valid(self, form):
+        response =  super().form_valid(form)
+        if self.request.user.has_perm('purchases.can_view_purchaseinvoice_added'):
+            assign_perm('purchases.view_purchaseinvoice', self.request.user, self.object)
+        if self.request.user.has_perm('purchases.can_change_purchaseinvoice_added'):
+            assign_perm('purchases.change_purchaseinvoice', self.request.user, self.object)
+        if self.request.user.has_perm('category.can_delete_purchaseinvoice_added'):
+            assign_perm('purchases.delete_purchaseinvoiceitem', self.request.user, self.object)
+        if self.request.user.has_perm('can_print_purchaseinvoice_print_add'):
+            assign_perm('can_print_purchaseinvoice_print', self.request.user, self.object)
+
+    
+    
+        return response
+
   
 
     

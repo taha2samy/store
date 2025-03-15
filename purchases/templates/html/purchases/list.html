@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}قائمة فواتير الشراء{% endblock %}
-
+{% load guardian_tags %}
 {% block content %}
 
 <div class="container">
@@ -19,11 +19,12 @@
     <h1 class="my-4">قائمة فواتير الشراء</h1>
 
     <!-- زر إضافة فاتورة شراء جديدة -->
+    {% if perms.purchases.add_purchaseinvoice %}
     <a hx-get="{% url 'purchase_create' %}"  hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-primary mb-3">
         <i class="fas fa-plus me-1"></i>
         إضافة فاتورة شراء جديدة
     </a>
-
+    {% endif %}
     <!-- واجهة التصفية -->
     <div class="card mb-4">
         <div class="card-header">
@@ -122,25 +123,32 @@
                 <td>{{ invoice.purchase_date|date:"Y-m-d" }}</td>
                 <td>{{ invoice.total_amount|floatformat:2 }}</td>
                 <td>
+                    {% get_obj_perms request.user for invoice as "obj_perms" %}
+                    {% if "can_view_purchaseinvoice_all_detail" in obj_perms or perms.purchases.can_view_purchaseinvoice_all_detail %}
                     <a hx-get="{% url 'purchase_detail' invoice.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-info">
                         <i class="fas fa-eye me-1"></i>
                         التفصيل
                     </a>
+                    {% endif %}
+                    {%if "change_purchaseinvoice" in obj_perms or perms.purchases.change_purchaseinvoice %}
                     <a hx-get="{% url 'purchase_update' invoice.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-warning">
                         <i class="fas fa-edit me-1"></i>
                         تعديل
                     </a>
-                
+                    {% endif %}
+                    {%if "delete_purchaseinvoice" in obj_perms or perms.purchases.delete_purchaseinvoice%}
                     <a hx-get="{% url 'purchase_delete' invoice.id %}" hx-push-url="true" hx-target="#content" hx-swap="innerHTML" class="btn btn-sm btn-danger">
                         <i class="fas fa-trash me-1"></i>
                         حذف
                     </a>
-                
+                    {% endif %}
+                    {% if "can_print_purchaseinvoice_print" in obj_perms or perms.purchases.can_print_purchaseinvoice_print %}
                     <!-- زر الطباعة -->
                     <a href="javascript:void(0);" onclick="printInvoice({{ invoice.id }})" class="btn btn-sm btn-primary">
                         <i class="fas fa-print me-1"></i>
                         طباعة
                     </a>
+                    {% endif %}
                 </td>
                 
                 <script>

@@ -44,7 +44,6 @@ class Supplier(models.Model):
         ]
 
 class PurchaseInvoice(models.Model):
-    
     invoice_number = models.CharField(max_length=50,default=gen_uuid, unique=True)
     supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, blank=True)
     purchase_date = models.DateTimeField(auto_now_add=True)
@@ -55,11 +54,20 @@ class PurchaseInvoice(models.Model):
     @total_amount.setter
     def total_amount(self, value):
         pass
-    
-    
-
     def __str__(self):
         return f'Invoice {self.invoice_number} - {self.supplier}'
+    class Meta:
+        permissions = [("can_view_purchaseinvoice_added","Can view purchase invoice what he added"),
+            ("can_change_purchaseinvoice_added","Can change purchase invoice what he added"),
+            ("can_delete_purchaseinvoice_added","Can delete purchase invoice what he added"),
+            ("can_view_purchaseinvoice_all_detail","Can view purchase invoice all detail"),
+            ("can_view_purchaseinvoice_all_detail_add","Can view purchase invoice all detail he add"),
+            ("can_print_purchaseinvoice_print","Can print purchase invoice print"),
+            ("can_print_purchaseinvoice_print_add","Can print purchase invoice print he add")
+
+            
+            ]
+
 
 class PurchaseInvoiceItem(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)

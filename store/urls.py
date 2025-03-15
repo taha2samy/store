@@ -16,7 +16,6 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from purchases.view import main
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls import handler403
@@ -25,7 +24,6 @@ handler403=permission_denied
 handler404=permission_denied
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('purchases/', main),
     path('purchaseswe/',include("purchases.urls")),
     path("category/",include("category.urls")),
     path("accounts/",include("profiles.urls")),
